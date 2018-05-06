@@ -1,0 +1,2 @@
+include images/*.png
+include README.md
