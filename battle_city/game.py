@@ -3,7 +3,7 @@ from battle_city.logic import GameLogic
 from battle_city.drawer import Drawer
 
 from typing import List
-from asyncio import wait
+from asyncio import wait, Lock
 
 
 class Game(object):
@@ -13,6 +13,7 @@ class Game(object):
     logic: GameLogic
     drawer: Drawer
     ready: bool = False
+    step_lock: Lock
 
     def __init__(self):
         self.players = [Player(0), Player(1)]
@@ -20,6 +21,7 @@ class Game(object):
         self.bullets = []
         self.logic = GameLogic(self)
         self.drawer = Drawer(self)
+        self.step_lock = Lock()
 
     def set_next_player(self, connection):
         for player in self.players:

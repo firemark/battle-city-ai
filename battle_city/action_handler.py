@@ -18,7 +18,8 @@ class ActionHandler(object):
             await player.connection.write_error('unknown direction')
             return
 
-        player.set_direction(direction)
+        with await game.step_lock:
+            player.set_direction(direction)
         await player.connection.write_ok(direction=direction.value)
 
     @staticmethod
@@ -28,11 +29,13 @@ class ActionHandler(object):
             await player.connection.write_error('speed has wrong value')
             return
 
-        player.set_speed(speed)
+        with await game.step_lock:
+            player.set_speed(speed)
         await player.connection.write_ok(speed=speed)
 
     @staticmethod
     async def action_shot(data: dict, player: Player, game: Game):
-        player.is_shot = True
+        with await game.step_lock:
+            player.set_shot()
         await player.connection.write_ok()
         

@@ -3,69 +3,91 @@ from battle_city.monsters import Player, NPC, Bullet
 from typing import List
 
 
-class GameLogic(object):
-    game = None  # type: Game
+class LogicPart(object):
+    game = None  # type: battle_city.game.Game
 
     def __init__(self, game):
         self.game = game
 
-    async def step(self):
-        await self.move_monsters()
-        await self.check_collisions()
-        await self.spawn()
+    async def do_it(self):
+        raise NotImplementedError('do_it')
 
-    async def move_monsters(self):
-        game = self.game
-        self._move(game.players)
-        self._move(game.npcs)
-        self._move(game.bullets)
+
+class MoveLogicPart(LogicPart):
+
+    async def do_it(self):
+        self.move(self.game.players)
+        self.move(self.game.npcs)
+        self.move(self.game.bullets)
 
     @staticmethod
-    def _move(monsters):
+    def move(monsters):
         for monster in monsters:
             monster.move()
 
-    async def check_collisions(self):
+
+class PlayerTickLogicPart(LogicPart):
+    ticks: int = 0
+
+    async def do_it(self):
+        self.ticks = self.ticks + 1
+
+        if ticks > 10:
+            self.ticks = 0
+
+
+class CheckCollisionsLogicPart(LogicPart):
+
+    async def do_it(self):
         players = self.game.players
         npcs = self.game.npcs
         bullets = self.game.bullets
 
-        for player, bullet in self._check_collision(players, bullets):
-            await self._remove_from_group(bullet, bullets)
+        for player, bullet in self.check_collision(players, bullets):
+            await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
                 player.is_freeze = True
             else:
-                await self._remove_from_group(player, players)
+                await self.remove_from_group(player, players)
 
-        for npc, bullet in self._check_collision(npcs, bullets):
-            await self._remove_from_group(bullet, bullets)
+        for npc, bullet in self.check_collision(npcs, bullets):
+            await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
-                await self._remove_from_group(npc, npcs)
+                await self.remove_from_group(npc, npcs)
 
-    async def _remove_from_group(self, monster, group):
+    async def remove_from_group(self, monster, group):
         data = dict(action='remove', id=monster.id.hex)
         group.remove(monster)
         await self.game.broadcast(data)
 
     @staticmethod
-    def _check_collision(group_a, group_b):
+    def check_collision(group_a, group_b):
         for monster in group_a:
             collisions = monster.check_collision(group_b)
             for collision in collisions:
                 yield (monster, collision) 
 
-    async def spawn(self):
-        await self._spawn_bullets(self.game.players)
-        await self._spawn_bullets(self.game.npcs)
 
-    async def _spawn_bullets(self, tanks):
+class SpawnNPCsLogicPart(LogicPart):
+
+    async def do_it(self):
+        pass
+
+
+class SpawnBulletsLogicPart(LogicPart):
+
+    async def do_it(self):
+        await self.spawn_bullets(self.game.players)
+        await self.spawn_bullets(self.game.npcs)
+
+    async def spawn_bullets(self, tanks):
         for tank in tanks:
             if not tank.is_shot:
                 continue
             tank.is_shot = False
-            await self._spawn_bullet(tank)
+            await self.spawn_bullet(tank)
 
-    async def _spawn_bullet(self, tank):
+    async def spawn_bullet(self, tank):
         position = tank.position
         bullet = Bullet(position.x, position.y)
         bullet.set_direction(tank.direction)
@@ -77,3 +99,24 @@ class GameLogic(object):
         await self.game.broadcast(data)
 
         self.game.bullets.append(bullet)
+
+
+class GameLogic(object):
+    game = None  # type: battle_city.game.Game
+    parts: List[LogicPart]
+
+    def __init__(self, game):
+        self.game = game
+        self.parts = [
+            # PlayerTickLogicPart(game),
+            MoveLogicPart(game),
+            CheckCollisionsLogicPart(game),
+            # SpawnNPCsLogicPart(game),
+            SpawnBulletsLogicPart(game),
+        ]
+
+    async def step(self):
+        with await self.game.step_lock:
+            for part in self.parts:
+                await part.do_it()
+

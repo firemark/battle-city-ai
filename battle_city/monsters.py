@@ -83,6 +83,9 @@ class Tank(Monster):
     def set_speed(self, speed: int):
         self.speed = min(max(speed, 0), 2)
 
+    def set_shot(self):
+        self.is_shot = True
+
 
 class NPC(Tank):
     direction: Direction = Direction.DOWN
