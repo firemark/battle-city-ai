@@ -15,6 +15,9 @@ class Game(object):
     ready: bool = False
     step_lock: Lock
 
+    width = 512
+    height = 512
+
     def __init__(self):
         self.players = [Player(0), Player(1)]
         self.npcs = []

@@ -34,7 +34,9 @@ class Monster(object):
         return self.__class__.__name__.lower()
 
     def check_collision(self, group: List):
-        return self.position.collidelistall(group)
+        rect_group = [monster.position for monster in group]
+        indices = self.position.collidelistall(rect_group)
+        return [group[index] for index in indices]
 
     def get_serialized_data(self):
         return dict(
@@ -66,7 +68,7 @@ class Monster(object):
 
 
 class Bullet(Monster):
-    speed: int = 5
+    speed: int = 10
     parent_type: str = None
     parent_id: UUID = None
     SIZE = 4
@@ -96,8 +98,11 @@ class NPC(Tank):
 
 class Player(Tank):
     player_id: int
+    score: int = 0
     ready: bool = False
     connection = None
+
+    had_action: bool = False
     
     def __init__(self, player_id):
         if player_id == 0:
@@ -111,6 +116,9 @@ class Player(Tank):
     def set(self, connection):
         self.connection = connection
         self.ready = True
+
+    def set_had_action(self):
+        self.had_action = True
 
     def get_serialized_data(self):
         data = super().get_serialized_data()

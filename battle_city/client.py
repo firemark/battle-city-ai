@@ -23,19 +23,24 @@ def change_state_callback(loop, writer):
 
 
 async def change_state(loop, writer):
-    speed = randint(0, 2)
-    data = json.dumps(dict(action='set_speed', speed=speed))
-    writer.write(data.encode())
-    writer.write(b'\n')
-    await writer.drain()
+    action = randint(0, 2)
 
-    direction = choice(['up', 'down', 'left', 'right'])
-    data = json.dumps(dict(action='rotate', direction=direction))
-    writer.write(data.encode())
-    writer.write(b'\n')
-    await writer.drain()
+    if action == 0:
+        speed = randint(0, 2)
+        data = dict(action='set_speed', speed=speed)
+    elif action == 1:
+        direction = choice(['up', 'down', 'left', 'right'])
+        data = dict(action='rotate', direction=direction)
+    else:
+        data = dict(action='shot')
 
-    t = randint(1, 2)
+    if data is not None:
+        data = json.dumps(data)
+        writer.write(data.encode())
+        writer.write(b'\n')
+        await writer.drain()
+
+    t = randint(1, 4) * 0.25
     loop.call_later(t, change_state_callback, loop, writer)
 
 

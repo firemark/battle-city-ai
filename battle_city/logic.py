@@ -26,14 +26,51 @@ class MoveLogicPart(LogicPart):
             monster.move()
 
 
-class PlayerTickLogicPart(LogicPart):
+class TickLogicPart(LogicPart):
     ticks: int = 0
 
     async def do_it(self):
         self.ticks = self.ticks + 1
 
-        if ticks > 10:
+        if self.ticks >= 300:
             self.ticks = 0
+            await self.unfreeze_players()
+
+        if self.ticks % 10 == 0:
+            await self.do_it_after_ticks()
+
+    async def unfreeze_players(self):
+        for player in self.game.players:
+            player.is_freeze = False
+            
+    async def do_it_after_ticks(self):
+        for player in self.game.players:
+            player.had_action = False
+        await self.spawn_bullets(self.game.players)
+        await self.spawn_bullets(self.game.npcs)
+
+    async def spawn_bullets(self, tanks):
+        for tank in tanks:
+            if not tank.is_shot:
+                continue
+            tank.is_shot = False
+            await self.spawn_bullet(tank)
+
+    async def spawn_bullet(self, tank):
+        position = tank.position
+        bullet = Bullet(
+            x=position.centerx,
+            y=position.centery,
+        )
+        bullet.set_direction(tank.direction)
+        bullet.set_parent(tank)
+        bullet.move_with_speed(32 - bullet.speed)
+
+        data = bullet.get_serialized_data()
+        data['action'] = 'spawn' 
+        await self.game.broadcast(data)
+
+        self.game.bullets.append(bullet)
 
 
 class CheckCollisionsLogicPart(LogicPart):
@@ -55,6 +92,12 @@ class CheckCollisionsLogicPart(LogicPart):
             if bullet.parent_type == 'player':
                 await self.remove_from_group(npc, npcs)
 
+        for bullet in bullets:
+            x = bullet.position.centerx
+            y = bullet.position.centery
+            if x < 0 or x > self.game.width or y < 0 or y > self.game.height:
+                await self.remove_from_group(bullet, bullets)
+
     async def remove_from_group(self, monster, group):
         data = dict(action='remove', id=monster.id.hex)
         group.remove(monster)
@@ -74,33 +117,6 @@ class SpawnNPCsLogicPart(LogicPart):
         pass
 
 
-class SpawnBulletsLogicPart(LogicPart):
-
-    async def do_it(self):
-        await self.spawn_bullets(self.game.players)
-        await self.spawn_bullets(self.game.npcs)
-
-    async def spawn_bullets(self, tanks):
-        for tank in tanks:
-            if not tank.is_shot:
-                continue
-            tank.is_shot = False
-            await self.spawn_bullet(tank)
-
-    async def spawn_bullet(self, tank):
-        position = tank.position
-        bullet = Bullet(position.x, position.y)
-        bullet.set_direction(tank.direction)
-        bullet.set_parent(parent)
-        bullet.move()
-
-        data = bullet.get_serialized_data()
-        data['action'] = 'spawn' 
-        await self.game.broadcast(data)
-
-        self.game.bullets.append(bullet)
-
-
 class GameLogic(object):
     game = None  # type: battle_city.game.Game
     parts: List[LogicPart]
@@ -108,11 +124,9 @@ class GameLogic(object):
     def __init__(self, game):
         self.game = game
         self.parts = [
-            # PlayerTickLogicPart(game),
+            TickLogicPart(game),
             MoveLogicPart(game),
             CheckCollisionsLogicPart(game),
-            # SpawnNPCsLogicPart(game),
-            SpawnBulletsLogicPart(game),
         ]
 
     async def step(self):

@@ -22,19 +22,30 @@ def _load_pack(name):
     }
 
 
+def _load_simple(name):
+    pathfile = path.join(IMAGES_DIR, f'{name}.png')
+    return img_load(pathfile)
+
+
 IMG_PLAYER_1 = _load_pack('player_1')
 IMG_PLAYER_2 = _load_pack('player_2')
 BULLET = _load_pack('bullet')
+FREEZE = _load_simple('freeze')
 
 
 class Drawer(object):
     game = None  # type: game.Game
+    time: int = 0
 
     def __init__(self, game):
+        self.time = 0
         self.screen = set_mode((800, 600), 0, 32)
         self.game = game
 
     def render(self):
+        self.time = self.time + 1
+        if self.time >= 100:
+            self.time = 0
         self.screen.fill((0, 0, 0))
         self._render_players()
         self._render_bullets()
@@ -50,6 +61,8 @@ class Drawer(object):
                 image = IMG_PLAYER_2
 
             self._blit(image, player)
+            if player.is_freeze and self.time % 30 > 15:
+                self.screen.blit(FREEZE, player.position)
 
     def _render_bullets(self):
         bullets = self.game.bullets
