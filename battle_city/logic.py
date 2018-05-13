@@ -1,4 +1,5 @@
 from battle_city.monsters import Player, NPC, Bullet
+from battle_city.basic import Direction
 
 from typing import List
 
@@ -24,6 +25,19 @@ class MoveLogicPart(LogicPart):
     def move(monsters):
         for monster in monsters:
             monster.move()
+
+
+class SetOldPositionLogicPart(LogicPart):
+
+    async def do_it(self):
+        self.set_old_positions(self.game.players)
+        self.set_old_positions(self.game.npcs)
+        self.set_old_positions(self.game.bullets)
+
+    @staticmethod
+    def set_old_positions(monsters):
+        for monster in monsters:
+            monster.set_old_position()
 
 
 class TickLogicPart(LogicPart):
@@ -58,13 +72,27 @@ class TickLogicPart(LogicPart):
 
     async def spawn_bullet(self, tank):
         position = tank.position
-        bullet = Bullet(
-            x=position.centerx,
-            y=position.centery,
-        )
-        bullet.set_direction(tank.direction)
+        direction = tank.direction
+
+        size = Bullet.SIZE
+        half_size = size // 2
+
+        if direction is Direction.UP:
+            x = position.centerx - half_size
+            y = position.top - size
+        elif direction is Direction.DOWN:
+            x = position.centerx - half_size
+            y = position.bottom + size
+        elif direction is Direction.LEFT:
+            x = position.left - size
+            y = position.centery - half_size
+        elif direction is Direction.RIGHT:
+            x = position.right + size
+            y = position.centery - half_size
+
+        bullet = Bullet(x, y)
+        bullet.set_direction(direction)
         bullet.set_parent(tank)
-        bullet.move_with_speed(32 - bullet.speed)
 
         data = bullet.get_serialized_data()
         data['action'] = 'spawn' 
@@ -85,7 +113,7 @@ class CheckCollisionsLogicPart(LogicPart):
         for player, bullet in self.check_collision(players, bullets):
             await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
-                player.is_freeze = True
+                self.freeze(player)
             else:
                 await self.remove_from_group(player, players)
 
@@ -104,8 +132,11 @@ class CheckCollisionsLogicPart(LogicPart):
             if wall.is_destroyed:
                 await self.remove_from_group(wall, walls)
                 
-        self.check_tank_collision_with_walls(players)
-        self.check_tank_collision_with_walls(npcs)
+        self.check_tank_collisions(players)
+        self.check_tank_collisions(npcs)
+
+    def freeze(self, player):
+        player.is_freeze = True
 
     def is_monster_in_area(self, monster): 
         position = monster.position
@@ -118,10 +149,26 @@ class CheckCollisionsLogicPart(LogicPart):
             position.top >= 0 and position.bottom <= height
         )
 
-    def check_tank_collision_with_walls(self, monsters):
+    def check_tank_collisions(self, monsters):
         walls = self.game.walls
         for monster, wall in self.check_collision(monsters, walls):
-            monster.move_with_speed(-monster.speed)
+            # we need to detect direction of move
+            # todo: move to generic function
+            diff_x = monster.position.x - monster.old_position.x
+            diff_y = monster.position.y - monster.old_position.y
+
+            monster_pos = monster.position 
+            wall_pos = wall.position
+
+            if diff_x > 0:
+                monster_pos.x -= monster_pos.right - wall_pos.left
+            elif diff_x < 0:
+                monster_pos.x -= monster_pos.left - wall_pos.right
+
+            if diff_y > 0:
+                monster_pos.y -= monster_pos.bottom - wall_pos.top
+            elif diff_y < 0:
+                monster_pos.y -= monster_pos.top - wall_pos.bottom
 
         for monster in monsters:
             if not self.is_monster_in_area(monster):
@@ -151,9 +198,10 @@ class GameLogic(object):
     def __init__(self, game):
         self.game = game
         self.parts = [
-            TickLogicPart(game),
             MoveLogicPart(game),
+            TickLogicPart(game),
             CheckCollisionsLogicPart(game),
+            SetOldPositionLogicPart(game),
         ]
 
     async def step(self):

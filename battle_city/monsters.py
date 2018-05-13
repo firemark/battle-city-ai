@@ -11,6 +11,7 @@ class Monster(object):
     speed: int = 0
     is_freeze: bool = False
     position: Rect
+    old_position: Rect
 
     SIZE = 8 
 
@@ -18,6 +19,10 @@ class Monster(object):
         self.id = uuid4()
         size = self.SIZE
         self.position = Rect(x, y, size, size)
+        self.set_old_position()
+
+    def set_old_position(self):
+        self.old_position = self.position.copy()
 
     def set_position(self, x: int, y: int):
         self.position.x = x
@@ -86,6 +91,17 @@ class Tank(Monster):
 
     def set_shot(self):
         self.is_shot = True
+
+    def set_direction(self, direction):
+        super().set_direction(direction)
+
+        # round after change direction like in original battle city.
+        # with rounding is more easy to move tank beetwen walls
+        part_size = self.SIZE / 2
+        if direction in {Direction.UP, Direction.DOWN}:
+            self.position.x = round(self.position.x / part_size) * part_size
+        else:
+            self.position.y = round(self.position.y / part_size) * part_size
 
 
 class NPC(Tank):
