@@ -3,6 +3,8 @@ from battle_city.basic import Direction
 from pygame.image import load as img_load
 from pygame.display import set_mode, flip
 from pygame.transform import rotate
+from pygame.draw import rect as draw_rect
+
 
 from os import path
 
@@ -38,21 +40,32 @@ class Drawer(object):
     game = None  # type: game.Game
     time: int = 0
 
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 600
+    OFFSET = 32
+
     def __init__(self, game):
         self.time = 0
-        self.screen = set_mode((800, 600), 0, 32)
+        self.screen = set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
         self.game = game
 
     def render(self):
         self.time = self.time + 1
         if self.time >= 100:
             self.time = 0
-        self.screen.fill((0, 0, 0))
+    
+        self._render_background()
         self._render_players()
         self._render_bullets()
         self._render_walls()
         self._render_text()
         flip()
+
+    def _render_background(self):
+        self.screen.fill((64, 64, 64))
+        offset = self.OFFSET
+        rect_size = (offset, offset, self.game.width, self.game.height)
+        draw_rect(self.screen, (0, 0, 0), rect_size)
 
     def _render_players(self):
         players = self.game.players
@@ -64,7 +77,7 @@ class Drawer(object):
 
             self._blit(image, player)
             if player.is_freeze and self.time % 30 > 15:
-                self.screen.blit(FREEZE, player.position)
+                self._blit_simple(FREEZE, player)
 
     def _render_bullets(self):
         for bullet in self.game.bullets:
@@ -73,14 +86,19 @@ class Drawer(object):
     def _render_walls(self):
         for wall in self.game.walls: 
             position = wall.position
-            cords = (position.x, position.y)
+            cords = (self.OFFSET + position.x, self.OFFSET + position.y)
             area = (0, 0, position.width, position.height)
-            self.screen.blit(WALL, position, area)
+            self.screen.blit(WALL, cords, area)
 
     def _render_text(self):
         pass
 
+    def _blit_simple(self, image, monster):
+        position = monster.position
+        cords = (self.OFFSET + position.x, self.OFFSET + position.y)
+        self.screen.blit(image, cords)
+
     def _blit(self, image_pack, monster):
         image = image_pack[monster.direction]
-        self.screen.blit(image, monster.position)
+        self._blit_simple(image, monster)
 
