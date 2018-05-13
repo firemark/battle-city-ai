@@ -76,9 +76,11 @@ class TickLogicPart(LogicPart):
 class CheckCollisionsLogicPart(LogicPart):
 
     async def do_it(self):
-        players = self.game.players
-        npcs = self.game.npcs
-        bullets = self.game.bullets
+        game = self.game
+        players = game.players
+        npcs = game.npcs
+        bullets = game.bullets
+        walls = game.walls
 
         for player, bullet in self.check_collision(players, bullets):
             await self.remove_from_group(bullet, bullets)
@@ -93,15 +95,46 @@ class CheckCollisionsLogicPart(LogicPart):
                 await self.remove_from_group(npc, npcs)
 
         for bullet in bullets:
-            x = bullet.position.centerx
-            y = bullet.position.centery
-            if x < 0 or x > self.game.width or y < 0 or y > self.game.height:
+            if not self.is_monster_in_area(bullet):
                 await self.remove_from_group(bullet, bullets)
+
+        for bullet, wall in self.check_collision(bullets, walls):
+            await self.remove_from_group(bullet, bullets)
+            wall.hurt(bullet.direction)
+            if wall.is_destroyed:
+                await self.remove_from_group(wall, walls)
+                
+        self.check_tank_collision_with_walls(players)
+        self.check_tank_collision_with_walls(npcs)
+
+    def is_monster_in_area(self, monster): 
+        position = monster.position
+
+        width = self.game.width
+        height = self.game.height
+
+        return (
+            position.left >= 0 and position.right <= width and
+            position.top >= 0 and position.bottom <= height
+        )
+
+    def check_tank_collision_with_walls(self, monsters):
+        walls = self.game.walls
+        for monster, wall in self.check_collision(monsters, walls):
+            monster.move_with_speed(-monster.speed)
+
+        for monster in monsters:
+            if not self.is_monster_in_area(monster):
+                monster.move_with_speed(-monster.speed)
 
     async def remove_from_group(self, monster, group):
         data = dict(action='remove', id=monster.id.hex)
-        group.remove(monster)
-        await self.game.broadcast(data)
+        try:
+            group.remove(monster)
+        except ValueError:
+            pass
+        else:
+            await self.game.broadcast(data)
 
     @staticmethod
     def check_collision(group_a, group_b):
@@ -109,12 +142,6 @@ class CheckCollisionsLogicPart(LogicPart):
             collisions = monster.check_collision(group_b)
             for collision in collisions:
                 yield (monster, collision) 
-
-
-class SpawnNPCsLogicPart(LogicPart):
-
-    async def do_it(self):
-        pass
 
 
 class GameLogic(object):

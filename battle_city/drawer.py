@@ -31,6 +31,7 @@ IMG_PLAYER_1 = _load_pack('player_1')
 IMG_PLAYER_2 = _load_pack('player_2')
 BULLET = _load_pack('bullet')
 FREEZE = _load_simple('freeze')
+WALL = _load_simple('wall')
 
 
 class Drawer(object):
@@ -49,6 +50,7 @@ class Drawer(object):
         self.screen.fill((0, 0, 0))
         self._render_players()
         self._render_bullets()
+        self._render_walls()
         self._render_text()
         flip()
 
@@ -57,7 +59,7 @@ class Drawer(object):
         for player in players:
             if player.player_id == 0:
                 image = IMG_PLAYER_1
-            if player.player_id == 1:
+            elif player.player_id == 1:
                 image = IMG_PLAYER_2
 
             self._blit(image, player)
@@ -65,9 +67,15 @@ class Drawer(object):
                 self.screen.blit(FREEZE, player.position)
 
     def _render_bullets(self):
-        bullets = self.game.bullets
-        for bullet in bullets:
+        for bullet in self.game.bullets:
             self._blit(BULLET, bullet)
+
+    def _render_walls(self):
+        for wall in self.game.walls: 
+            position = wall.position
+            cords = (position.x, position.y)
+            area = (0, 0, position.width, position.height)
+            self.screen.blit(WALL, position, area)
 
     def _render_text(self):
         pass

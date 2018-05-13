@@ -18,7 +18,6 @@ class Monster(object):
         self.id = uuid4()
         size = self.SIZE
         self.position = Rect(x, y, size, size)
-        self.center = (size // 2, size // 2)
 
     def set_position(self, x: int, y: int):
         self.position.x = x
@@ -106,9 +105,9 @@ class Player(Tank):
     
     def __init__(self, player_id):
         if player_id == 0:
-            super().__init__(64, 180)
+            super().__init__(128, 320)
         elif player_id == 1:
-            super().__init__(512 - 64, 180)
+            super().__init__(512 - 128, 320)
         else:
             raise ValueError('player_id')
         self.player_id = player_id
@@ -124,3 +123,37 @@ class Player(Tank):
         data = super().get_serialized_data()
         data['player_id'] = self.player_id
         return data
+
+
+class Wall(object):
+    id: UUID
+    is_destroyed: bool
+    position: Rect
+    SIZE = 32
+    PART_SIZE = 8
+
+    def __init__(self, x: int, y: int):
+        self.id = uuid4()
+        size = self.SIZE
+        self.position = Rect(x, y, size, size)
+        self.is_destroyed = False
+
+    def hurt(self, direction: Direction):
+        position = self.position
+        part = self.PART_SIZE
+        if self.is_destroyed:
+            return
+
+        if direction == Direction.UP:
+            position.height -= part
+        elif direction == Direction.DOWN:
+            position.height -= part
+            position.y += part
+        elif direction == Direction.RIGHT:
+            position.width -= part
+            position.x += part
+        elif direction == Direction.LEFT:
+            position.width -= part
+
+        if position.width == 0 or position.height == 0:
+            self.is_destroyed = True
