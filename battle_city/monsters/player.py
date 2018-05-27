@@ -25,7 +25,7 @@ class Player(Tank):
     def set_had_action(self):
         self.had_action = True
 
-    def get_serialized_data(self):
-        data = super().get_serialized_data()
+    def get_serialized_data(self, action='change'):
+        data = super().get_serialized_data(action=action)
         data['player_id'] = self.player_id
         return data

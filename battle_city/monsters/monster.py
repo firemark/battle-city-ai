@@ -42,14 +42,23 @@ class Monster(object):
         indices = self.position.collidelistall(rect_group)
         return [group[index] for index in indices]
 
-    def get_serialized_data(self):
+    def get_serialized_data(self, action='change'):
         return dict(
+            status='data',
+            action=action,
             id=self.id.hex,
             type=self.get_type(),
             speed=self.speed,
             position=dict(x=self.position.x, y=self.position.y),
             is_freeze=self.is_freeze,
             direction=self.direction.value,
+        )
+
+    def get_serialized_move_data(self):
+        return dict(
+            status='data',
+            action='move',
+            position=dict(x=self.position.x, y=self.position.y),
         )
 
     def move(self):

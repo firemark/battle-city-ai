@@ -1,4 +1,5 @@
 from battle_city.monsters import Monster
+from battle_city.basic import Direction
 
 
 class Tank(Monster):

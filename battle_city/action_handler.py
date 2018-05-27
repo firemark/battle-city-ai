@@ -19,7 +19,7 @@ class ActionHandler(object):
             await cls.write_error(player, 'too many actions per turn')
             return False
         else:
-            player.set_had_action()
+            await cls.set_had_action(player, game)
             return True
 
     @classmethod
@@ -39,7 +39,7 @@ class ActionHandler(object):
             if not await cls.can_has_action(game, player):
                 return
             player.set_direction(direction)
-            player.set_had_action()
+            await cls.set_had_action(player, game)
         await cls.write_ok(player, direction=direction.value)
 
     @classmethod
@@ -53,7 +53,7 @@ class ActionHandler(object):
             if not await cls.can_has_action(game, player):
                 return
             player.set_speed(speed)
-            player.set_had_action()
+            await cls.set_had_action(player, game)
         await cls.write_ok(player, speed=speed)
 
     @classmethod
@@ -62,5 +62,11 @@ class ActionHandler(object):
             if not await cls.can_has_action(game, player):
                 return
             player.set_shot()
-            player.set_had_action()
+            await cls.set_had_action(player, game)
         await cls.write_ok(player) 
+
+    @staticmethod
+    async def set_had_action(player: Player, game: Game):
+        player.set_had_action()
+        await game.broadcast(player.get_serialized_data())
+

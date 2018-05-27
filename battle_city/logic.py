@@ -2,6 +2,7 @@ from battle_city.monsters import Player, NPC, Bullet
 from battle_city.basic import Direction
 
 from typing import List
+from random import random, choice
 
 
 class LogicPart(object):
@@ -17,26 +18,14 @@ class LogicPart(object):
 class MoveLogicPart(LogicPart):
 
     async def do_it(self):
-        self.move(self.game.players)
-        self.move(self.game.npcs)
-        self.move(self.game.bullets)
-
-    @staticmethod
-    def move(monsters):
-        for monster in monsters:
+        for monster in self.game.get_monsters_chain():
             monster.move()
 
 
 class SetOldPositionLogicPart(LogicPart):
 
     async def do_it(self):
-        self.set_old_positions(self.game.players)
-        self.set_old_positions(self.game.npcs)
-        self.set_old_positions(self.game.bullets)
-
-    @staticmethod
-    def set_old_positions(monsters):
-        for monster in monsters:
+        for monster in self.game.get_monsters_chain():
             monster.set_old_position()
 
 
@@ -60,8 +49,9 @@ class TickLogicPart(LogicPart):
     async def do_it_after_ticks(self):
         for player in self.game.players:
             player.had_action = False
-        await self.spawn_bullets(self.game.players)
-        await self.spawn_bullets(self.game.npcs)
+        await self.spawn_bullets(self.game.get_tanks_chain())
+        await self.spawn_npc()
+        await self.do_sth_with_npcs()
 
     async def spawn_bullets(self, tanks):
         for tank in tanks:
@@ -94,11 +84,29 @@ class TickLogicPart(LogicPart):
         bullet.set_direction(direction)
         bullet.set_parent(tank)
 
-        data = bullet.get_serialized_data()
-        data['action'] = 'spawn' 
+        data = bullet.get_serialized_data(action='spawn')
         await self.game.broadcast(data)
 
         self.game.bullets.append(bullet)
+
+    async def spawn_npc(self):
+        if len(self.game.npcs) >= self.game.MAX_NPC_IN_AREA:
+            return
+        if random() > 0.1:
+            return
+
+        npc = NPC(32, 32)  # todo - get map coordinations
+        self.game.npcs.append(npc)
+        npc_data = npc.get_serialized_data(action='spawn')
+        await self.game.broadcast(npc_data)
+
+    async def do_sth_with_npcs(self):
+        for npc in self.game.npcs:
+            is_changed = npc.do_something()
+            if not is_changed:
+                continue
+            npc_data = npc.get_serialized_data()
+            await self.game.broadcast(npc_data)
 
 
 class CheckCollisionsLogicPart(LogicPart):
@@ -113,7 +121,7 @@ class CheckCollisionsLogicPart(LogicPart):
         for player, bullet in self.check_collision(players, bullets):
             await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
-                self.freeze(player)
+                await self.freeze(player)
             else:
                 await self.remove_from_group(player, players)
 
@@ -135,14 +143,16 @@ class CheckCollisionsLogicPart(LogicPart):
         self.check_tank_collisions(players)
         self.check_tank_collisions(npcs)
 
-    def freeze(self, player):
+    async def freeze(self, player: Player):
         player.is_freeze = True
+        data = player.get_serialized_data(action='freeze')
+        await self.game.broadcast(data)
 
     def is_monster_in_area(self, monster): 
         position = monster.position
 
-        width = self.game.width
-        height = self.game.height
+        width = self.game.WIDTH
+        height = self.game.HEIGHT
 
         return (
             position.left >= 0 and position.right <= width and
@@ -175,7 +185,7 @@ class CheckCollisionsLogicPart(LogicPart):
                 monster.move_with_speed(-monster.speed)
 
     async def remove_from_group(self, monster, group):
-        data = dict(action='remove', id=monster.id.hex)
+        data = dict(status='data', action='remove', id=monster.id.hex)
         try:
             group.remove(monster)
         except ValueError:

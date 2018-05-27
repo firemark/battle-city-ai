@@ -31,6 +31,7 @@ def _load_simple(name):
 
 IMG_PLAYER_1 = _load_pack('player_1')
 IMG_PLAYER_2 = _load_pack('player_2')
+IMG_NPC = _load_pack('npc')
 BULLET = _load_pack('bullet')
 FREEZE = _load_simple('freeze')
 WALL = _load_simple('wall')
@@ -57,6 +58,7 @@ class Drawer(object):
         self._render_background()
         self._render_players()
         self._render_bullets()
+        self._render_npcs()
         self._render_walls()
         self._render_text()
         flip()
@@ -64,7 +66,7 @@ class Drawer(object):
     def _render_background(self):
         self.screen.fill((64, 64, 64))
         offset = self.OFFSET
-        rect_size = (offset, offset, self.game.width, self.game.height)
+        rect_size = (offset, offset, self.game.WIDTH, self.game.HEIGHT)
         draw_rect(self.screen, (0, 0, 0), rect_size)
 
     def _render_players(self):
@@ -78,6 +80,11 @@ class Drawer(object):
             self._blit(image, player)
             if player.is_freeze and self.time % 30 > 15:
                 self._blit_simple(FREEZE, player)
+
+    def _render_npcs(self):
+        npcs = self.game.npcs
+        for npc in npcs:
+            self._blit(IMG_NPC, npc)
 
     def _render_bullets(self):
         for bullet in self.game.bullets:
