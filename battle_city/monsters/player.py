@@ -9,12 +9,9 @@ class Player(Tank):
 
     had_action: bool = False
     
-    def __init__(self, player_id):
-        if player_id == 0:
-            super().__init__(128, 320)
-        elif player_id == 1:
-            super().__init__(512 - 128, 320)
-        else:
+    def __init__(self, player_id, x, y):
+        super().__init__(x, y)
+        if player_id not in range(4):
             raise ValueError('player_id')
         self.player_id = player_id
 

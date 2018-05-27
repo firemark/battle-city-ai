@@ -95,7 +95,8 @@ class TickLogicPart(LogicPart):
         if random() > 0.1:
             return
 
-        npc = NPC(32, 32)  # todo - get map coordinations
+        spawn = choice(self.game.npc_spawns)
+        npc = NPC(*spawn)
         self.game.npcs.append(npc)
         npc_data = npc.get_serialized_data(action='spawn')
         await self.game.broadcast(npc_data)

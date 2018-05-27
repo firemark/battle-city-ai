@@ -1,8 +1,9 @@
-from battle_city.monsters import Player, NPC, Bullet, Wall
+from battle_city.monsters import Player, NPC, Bullet, Wall, Spawner
 from battle_city.logic import GameLogic
 from battle_city.drawer import Drawer
+from battle_city.map_maker import MapMaker
 
-from typing import List
+from typing import List, Dict
 from asyncio import wait, Lock
 from itertools import chain
 
@@ -12,6 +13,8 @@ class Game(object):
     npcs: List[NPC]
     bullets: List[Bullet]
     walls: List[Wall]
+    player_spawns: Dict[str, Spawner]
+    npc_spawns: List[Spawner]
     logic: GameLogic
     drawer: Drawer
     ready: bool = False
@@ -20,24 +23,21 @@ class Game(object):
     WIDTH = 512
     HEIGHT = 512
 
-    MAX_NPC_IN_AREA = 3
+    MAX_NPC_IN_AREA = 5
 
     def __init__(self):
-        self.players = [Player(0), Player(1)]
         self.npcs = []
         self.bullets = []
-        self.walls = [
-            Wall(x, 32)
-            for x in range(32, self.WIDTH - 32, 32)
-        ] + [
-            Wall(x, 512 - 64)
-            for x in range(32, self.WIDTH - 32, 32)
-        ] + [
-            Wall(32, y)
-            for y in range(32, self.HEIGHT - 32, 32)
-        ] + [
-            Wall(512 - 64, y)
-            for y in range(32, self.HEIGHT - 32, 32)
+        self.walls = []
+        self.player_spawns = {}
+        self.npc_spawns = []
+
+        data_map = MapMaker.load_data_from_name('a')
+        MapMaker(self, data_map).make()
+
+        self.players = [
+            Player(player_id, *self.player_spawns[player_id])
+            for player_id in range(2)
         ]
         self.logic = GameLogic(self)
         self.drawer = Drawer(self)

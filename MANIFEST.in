@@ -1,2 +1,3 @@
 include images/*.png
+include maps/*.map
 include README.md
