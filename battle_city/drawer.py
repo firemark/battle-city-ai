@@ -1,4 +1,5 @@
 from battle_city.basic import Direction
+from battle_city.monsters.wall import Wall, Metal, Water
 
 from pygame.image import load as img_load
 from pygame.display import set_mode, flip
@@ -34,7 +35,12 @@ IMG_PLAYER_2 = _load_pack('player_2')
 IMG_NPC = _load_pack('npc')
 BULLET = _load_pack('bullet')
 FREEZE = _load_simple('freeze')
-WALL = _load_simple('wall')
+
+WALLS = {
+    Wall: _load_simple('wall'),
+    Metal: _load_simple('metal'),
+    Water: _load_simple('water'),
+}
 
 
 class Drawer(object):
@@ -95,7 +101,8 @@ class Drawer(object):
             position = wall.position
             cords = (self.OFFSET + position.x, self.OFFSET + position.y)
             area = (0, 0, position.width, position.height)
-            self.screen.blit(WALL, cords, area)
+            image = WALLS[type(wall)]
+            self.screen.blit(image, cords, area)
 
     def _render_text(self):
         pass

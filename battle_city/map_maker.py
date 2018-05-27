@@ -1,4 +1,4 @@
-from battle_city.monsters import Wall, Spawner
+from battle_city.monsters import Wall, Water, Metal, Spawner
 from os import path
 
 DIR = path.abspath(path.dirname(__file__))
@@ -17,8 +17,8 @@ class MapMaker(object):
         '$': 'empty',
         '\n': 'empty',
         '#': 'brick',
-        '@': 'brick',
-        '~': 'brick',
+        '@': 'metal',
+        '~': 'water',
         '*': 'spawn',
         '1': 'player',
         '2': 'player',
@@ -59,6 +59,14 @@ class MapMaker(object):
     def make_brick(self, char, cords, tile_cords):
         wall = Wall(*cords)
         self.game.walls.append(wall)
+
+    def make_water(self, char, cords, tile_cords):
+        water = Water(*cords)
+        self.game.walls.append(water)
+
+    def make_metal(self, char, cords, tile_cords):
+        metal = Metal(*cords)
+        self.game.walls.append(metal)
 
     def make_player(self, char, cords, tile_cords):
         number = int(char) - 1

@@ -21,7 +21,7 @@ class Wall(object):
         position = self.position
         part = self.PART_SIZE
         if self.is_destroyed:
-            return
+            return True
 
         if direction == Direction.UP:
             position.height -= part
@@ -36,3 +36,17 @@ class Wall(object):
 
         if position.width == 0 or position.height == 0:
             self.is_destroyed = True
+
+        return True
+
+
+class Metal(Wall):
+
+    def hurt(self, direction: Direction):
+        return True
+
+
+class Water(Wall):
+
+    def hurt(self, direction: Direction):
+        return False

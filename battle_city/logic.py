@@ -136,8 +136,11 @@ class CheckCollisionsLogicPart(LogicPart):
                 await self.remove_from_group(bullet, bullets)
 
         for bullet, wall in self.check_collision(bullets, walls):
-            await self.remove_from_group(bullet, bullets)
-            wall.hurt(bullet.direction)
+            is_hurted = wall.hurt(bullet.direction)
+
+            if is_hurted:
+                await self.remove_from_group(bullet, bullets)
+
             if wall.is_destroyed:
                 await self.remove_from_group(wall, walls)
                 
