@@ -31,6 +31,12 @@ class Monster(object):
     def set_speed(self, speed: int):
         self.speed = speed
 
+    def set_freeze(self):
+        self.is_freeze = True
+
+    def unset_freeze(self):
+        self.is_freeze = False
+
     def set_direction(self, direction: Direction):
         self.direction = direction
 

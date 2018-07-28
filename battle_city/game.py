@@ -31,17 +31,23 @@ class Game(object):
         self.walls = []
         self.player_spawns = {}
         self.npc_spawns = []
+        self.players = []
 
-        data_map = MapMaker.load_data_from_name('a')
+        self.logic = GameLogic(self)
+        self.drawer = None
+        self.step_lock = Lock()
+
+    def load_map(self, name):
+        data_map = MapMaker.load_data_from_name(name)
         MapMaker(self, data_map).make()
 
         self.players = [
             Player(player_id, *self.player_spawns[player_id])
             for player_id in range(2)
         ]
-        self.logic = GameLogic(self)
+
+    def set_drawer(self):
         self.drawer = Drawer(self)
-        self.step_lock = Lock()
 
     def set_next_player(self, connection):
         for player in self.players:
@@ -56,9 +62,6 @@ class Game(object):
         if len(self.players) < 2:
             return False
         return all(player.ready for player in self.players)
-
-    def run(self):
-        self.ready = True
 
     def get_monsters_chain(self):
         return chain(

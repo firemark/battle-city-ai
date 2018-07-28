@@ -42,6 +42,8 @@ async def handle_action(connection, data: dict, player, game):
 
 def run():
     game = Game()
+    game.load_map('a')
+    game.set_drawer()
     loop = get_event_loop()
     coro_server = start_server(
         handle_connection(game), '0.0.0.0', 8888,

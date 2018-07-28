@@ -44,8 +44,8 @@ class TickLogicPart(LogicPart):
 
     async def unfreeze_players(self):
         for player in self.game.players:
-            player.is_freeze = False
-            
+            player.unset_freeze()
+
     async def do_it_after_ticks(self):
         for player in self.game.players:
             player.had_action = False
@@ -148,7 +148,7 @@ class CheckCollisionsLogicPart(LogicPart):
         self.check_tank_collisions(npcs)
 
     async def freeze(self, player: Player):
-        player.is_freeze = True
+        player.set_freeze()
         data = player.get_serialized_data(action='freeze')
         await self.game.broadcast(data)
 
