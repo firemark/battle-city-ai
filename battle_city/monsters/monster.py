@@ -55,7 +55,7 @@ class Monster(object):
             id=self.id.hex,
             type=self.get_type(),
             speed=self.speed,
-            position=dict(x=self.position.x, y=self.position.y),
+            position=self.get_position(),
             is_freeze=self.is_freeze,
             direction=self.direction.value,
         )
@@ -64,7 +64,13 @@ class Monster(object):
         return dict(
             status='data',
             action='move',
-            position=dict(x=self.position.x, y=self.position.y),
+            position=self.get_position(),
+        )
+
+    def get_position(self):
+        return dict(
+            x=self.position.x,
+            y=self.position.y,
         )
 
     def move(self):

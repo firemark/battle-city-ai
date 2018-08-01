@@ -47,14 +47,17 @@ class TickLogicPart(LogicPart):
             player.unset_freeze()
 
     async def do_it_after_ticks(self):
-        for player in self.game.players:
-            player.had_action = False
-        await self.spawn_bullets(self.game.get_tanks_chain())
+        await self.unset_player_actions()
+        await self.spawn_bullets()
         await self.spawn_npc()
         await self.do_sth_with_npcs()
 
-    async def spawn_bullets(self, tanks):
-        for tank in tanks:
+    async def unset_player_actions(self):
+        for player in self.game.players:
+            player.had_action = False
+
+    async def spawn_bullets(self):
+        for tank in self.game.get_tanks_chain():
             if not tank.is_shot:
                 continue
             tank.is_shot = False
@@ -79,6 +82,9 @@ class TickLogicPart(LogicPart):
         elif direction is Direction.RIGHT:
             x = position.right + size
             y = position.centery - half_size
+        else:
+            x = 0
+            y = 0
 
         bullet = Bullet(x, y)
         bullet.set_direction(direction)

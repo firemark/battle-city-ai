@@ -17,6 +17,6 @@ async def test_set_old_position():
 
     await SetOldPositionLogicPart(game).do_it()
 
-    for monster in game.get_monsters_chain():
+    for monster in game.bullets + game.players + game.npcs:
         assert monster.old_position.x == 42
         assert monster.old_position.y == 24
