@@ -171,28 +171,45 @@ class CheckCollisionsLogicPart(LogicPart):
 
     def check_tank_collisions(self, monsters):
         walls = self.game.walls
-        for monster, wall in self.check_collision(monsters, walls):
-            # we need to detect direction of move
-            # todo: move to generic function
-            diff_x = monster.position.x - monster.old_position.x
-            diff_y = monster.position.y - monster.old_position.y
-
-            monster_pos = monster.position 
-            wall_pos = wall.position
-
-            if diff_x > 0:
-                monster_pos.x -= monster_pos.right - wall_pos.left
-            elif diff_x < 0:
-                monster_pos.x -= monster_pos.left - wall_pos.right
-
-            if diff_y > 0:
-                monster_pos.y -= monster_pos.bottom - wall_pos.top
-            elif diff_y < 0:
-                monster_pos.y -= monster_pos.top - wall_pos.bottom
+        for monster in monsters:
+            # small probability to infity loop - we need to cancel on 5th try
+            for i in range(5):
+                collision_walls = monster.check_collision(walls)
+                if not collision_walls:
+                    break
+                wall = collision_walls[0]
+                self.move_monster_after_check_wall(monster, wall)
 
         for monster in monsters:
-            if not self.is_monster_in_area(monster):
-                monster.move_with_speed(-monster.speed)
+            if monster.position.left < 0:
+                monster.position.x = 0
+            elif monster.position.right > self.game.WIDTH:
+                monster.position.x = self.game.WIDTH - monster.SIZE
+
+            if monster.position.top < 0:
+                monster.position.y = 0
+            elif monster.position.bottom > self.game.HEIGHT:
+                monster.position.y = self.game.HEIGHT - monster.SIZE
+
+    @staticmethod
+    def move_monster_after_check_wall(monster, wall):
+        monster_pos = monster.position
+        wall_pos = wall.position
+
+        # we need to detect direction of move using diff
+        diff_x = monster.position.x - monster.old_position.x
+        diff_y = monster.position.y - monster.old_position.y
+
+        # according to diff we can move monster to selected side of wall
+        if diff_x > 0:
+            monster_pos.x -= monster_pos.right - wall_pos.left
+        elif diff_x < 0:
+            monster_pos.x -= monster_pos.left - wall_pos.right
+
+        if diff_y > 0:
+            monster_pos.y -= monster_pos.bottom - wall_pos.top
+        elif diff_y < 0:
+            monster_pos.y -= monster_pos.top - wall_pos.bottom
 
     async def remove_from_group(self, monster, group):
         data = dict(status='data', action='remove', id=monster.id.hex)
@@ -208,7 +225,7 @@ class CheckCollisionsLogicPart(LogicPart):
         for monster in group_a:
             collisions = monster.check_collision(group_b)
             for collision in collisions:
-                yield (monster, collision) 
+                yield (monster, collision)
 
 
 class GameLogic(object):

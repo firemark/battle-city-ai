@@ -161,3 +161,6 @@ async def test_spawn_npc(random_mock):
         is_freeze=False,
         direction='down',
     ))
+
+
+# todo - check single spawn bullet with directions
