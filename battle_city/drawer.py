@@ -121,9 +121,9 @@ class Drawer(object):
 
     def _render_text(self):
         self._render_label('BATTLE CITY AI', (0, 0))
-        self._render_label(f'NPCs left: {self.game.npcs_left}', (0, 40))
-        self._render_label(f'NPCs in area: {len(self.game.npcs)}', (0, 80))
-        self._render_label(f'Time: {self.time}', (0, 120))
+        self._render_label(f'NPCs left: {self.game.npcs_left:03d}', (0, 40))
+        self._render_label(f'NPCs in area: {len(self.game.npcs):03d}', (0, 80))
+        self._render_label(f'Time left: {self.game.time_left:04d}', (0, 120))
 
         if not self.game.is_ready():
             self._render_label(f'NOT READY', (0, 180))

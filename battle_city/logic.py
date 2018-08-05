@@ -33,7 +33,7 @@ class TickLogicPart(LogicPart):
     ticks: int = 0
 
     async def do_it(self):
-        self.ticks = self.ticks + 1
+        self.ticks += 1
 
         if self.ticks >= 300:
             self.ticks = 0
@@ -51,6 +51,8 @@ class TickLogicPart(LogicPart):
         await self.spawn_bullets()
         await self.spawn_npc()
         await self.do_sth_with_npcs()
+
+        self.game.time_left -= 1
 
     async def unset_player_actions(self):
         for player in self.game.players:

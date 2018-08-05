@@ -34,6 +34,7 @@ class Game(object):
         self.npc_spawns = []
         self.players = []
         self.npcs_left = 20
+        self.time_left = 300
 
         self.logic = GameLogic(self)
         self.drawer = None

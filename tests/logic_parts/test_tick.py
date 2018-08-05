@@ -60,6 +60,7 @@ async def test_do_actions_after_10_ticks():
 @pytest.mark.asyncio
 async def test_do_it_after_ticks():
     game = Game()
+    game.time_left = 250
     game.players = [Player(0, 128, 128)]
     game.npcs = [NPC(128, 128)]
     logic = TickLogicPart(game)
@@ -76,6 +77,8 @@ async def test_do_it_after_ticks():
     patch_values['spawn_npc'].assert_called_once_with()
     patch_values['do_sth_with_npcs'].assert_called_once_with()
     patch_values['spawn_bullets'].assert_called_once_with()
+
+    assert game.time_left == 249
 
 
 @pytest.mark.asyncio
