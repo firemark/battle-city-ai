@@ -6,6 +6,7 @@ class Player(Tank):
     score: int = 0
     ready: bool = False
     connection = None
+    is_game_over: bool = False
 
     had_action: bool = False
     
@@ -15,12 +16,15 @@ class Player(Tank):
             raise ValueError('player_id')
         self.player_id = player_id
 
-    def set(self, connection):
+    def set_connection(self, connection):
         self.connection = connection
         self.ready = True
 
     def set_had_action(self):
         self.had_action = True
+
+    def set_game_over(self):
+        self.is_game_over = True
 
     def get_serialized_data(self, action='change'):
         data = super().get_serialized_data(action=action)

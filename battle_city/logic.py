@@ -43,7 +43,7 @@ class TickLogicPart(LogicPart):
             await self.do_it_after_ticks()
 
     async def unfreeze_players(self):
-        for player in self.game.players:
+        for player in self.game.alive_players:
             player.unset_freeze()
 
     async def do_it_after_ticks(self):
@@ -55,7 +55,7 @@ class TickLogicPart(LogicPart):
         self.game.time_left -= 1
 
     async def unset_player_actions(self):
-        for player in self.game.players:
+        for player in self.game.alive_players:
             player.had_action = False
 
     async def spawn_bullets(self):
@@ -123,7 +123,7 @@ class CheckCollisionsLogicPart(LogicPart):
 
     async def do_it(self):
         game = self.game
-        players = game.players
+        players = game.alive_players
         npcs = game.npcs
         bullets = game.bullets
         walls = game.walls
@@ -134,7 +134,8 @@ class CheckCollisionsLogicPart(LogicPart):
                 bullet.parent.score += 5
                 await self.freeze(player)
             else:
-                await self.remove_from_group(player, players)
+                player.set_game_over()
+                await self.remove_from_group(player, self.game.alive_players)
 
         for npc, bullet in self.check_collision(npcs, bullets):
             await self.remove_from_group(bullet, bullets)

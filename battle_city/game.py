@@ -33,6 +33,8 @@ class Game(object):
         self.player_spawns = {}
         self.npc_spawns = []
         self.players = []
+        self.alive_players = []
+        self.connections = []
         self.npcs_left = 20
         self.time_left = 300
 
@@ -48,40 +50,48 @@ class Game(object):
             Player(player_id, *self.player_spawns[player_id])
             for player_id in range(2)
         ]
+        self.alive_players = self.players[:]  # copy list
 
     def set_drawer(self):
         self.drawer = Drawer(self)
 
     def set_next_player(self, connection):
+        self.connections.append(connection)
         for player in self.players:
             if player.ready:
                 continue
-            player.set(connection)
+            player.set_connection(connection)
             return player 
         else:
             return None
 
     def is_ready(self):
-        if len(self.players) < 2:
-            return False
         return all(player.ready for player in self.players)
+
+    def is_over(self):
+        return (
+            self.time_left <= 0
+            or len(self.alive_players) < 2
+            or len(self.npcs) + self.npcs_left == 0
+        )
 
     def get_monsters_chain(self):
         return chain(
-            self.players,
+            self.alive_players,
             self.npcs,
             self.bullets,
         )
 
     def get_tanks_chain(self):
-        return chain(self.players, self.npcs)
+        return chain(self.alive_players, self.npcs)
 
     async def broadcast(self, data):
-        await wait([
-            player.connection.write(data)
-            for player in self.players
-            if player.connection is not None
-        ])
+        events = [
+            connection.write(data)
+            for connection in self.connections
+        ]
+        if events:
+            await wait(events)
 
     async def send_informations(self):
         for monster in self.get_monsters_chain():
@@ -89,7 +99,7 @@ class Game(object):
             await self.broadcast(data)
 
     async def step(self):
-        if self.is_ready():
+        if self.is_ready() and not self.is_over():
             await self.logic.step()
             await self.send_informations()
         self.drawer.render()

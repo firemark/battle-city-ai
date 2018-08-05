@@ -91,7 +91,7 @@ class Drawer(object):
         draw_rect(self.screen, (0, 0, 0), rect_size)
 
     def _render_players(self):
-        players = self.game.players
+        players = self.game.alive_players
         for player in players:
             if player.player_id == 0:
                 image = IMG_PLAYER_1
@@ -127,10 +127,18 @@ class Drawer(object):
 
         if not self.game.is_ready():
             self._render_label(f'NOT READY', (0, 180))
+        elif self.game.is_over():
+            self._render_label(f'GAME OVER', (0, 180), color=(255, 0, 0))
 
         for num, player in enumerate(self.game.players, start=1):
-            name_label = f'P{player.player_id}' if player.connection else '??'
-            label = f'{name_label}: {player.score:06d}'
+            name_label = f'P{player.player_id}'
+            if player.is_game_over and self.time > 50:
+                info_label = 'KILLED'
+            elif not player.connection:
+                info_label = 'WAIT'
+            else:
+                info_label = ''
+            label = f'{name_label}: {player.score:06d} {info_label}'
             color = self.PLAYER_COLORS[player.player_id]
             self._render_label(label, (0, 200 + 40 * num), color)
 
