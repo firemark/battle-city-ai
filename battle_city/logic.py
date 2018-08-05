@@ -104,6 +104,7 @@ class TickLogicPart(LogicPart):
         spawn = choice(self.game.npc_spawns)
         npc = NPC(*spawn)
         self.game.npcs.append(npc)
+        self.game.npcs_left -= 1
         npc_data = npc.get_serialized_data(action='spawn')
         await self.game.broadcast(npc_data)
 
@@ -128,6 +129,7 @@ class CheckCollisionsLogicPart(LogicPart):
         for player, bullet in self.check_collision(players, bullets):
             await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
+                bullet.parent.score += 5
                 await self.freeze(player)
             else:
                 await self.remove_from_group(player, players)
@@ -135,6 +137,7 @@ class CheckCollisionsLogicPart(LogicPart):
         for npc, bullet in self.check_collision(npcs, bullets):
             await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
+                bullet.parent.score += 200
                 await self.remove_from_group(npc, npcs)
 
         for bullet in bullets:
@@ -149,7 +152,9 @@ class CheckCollisionsLogicPart(LogicPart):
 
             if wall.is_destroyed:
                 await self.remove_from_group(wall, walls)
-                
+                if bullet.parent_type == 'player':
+                    bullet.parent.score += 5
+
         self.check_tank_collisions(players)
         self.check_tank_collisions(npcs)
 
@@ -174,6 +179,7 @@ class CheckCollisionsLogicPart(LogicPart):
         for monster in monsters:
             # small probability to infity loop - we need to cancel on 5th try
             for i in range(5):
+                # check_collision is very greedy - in future we need quadtree structure
                 collision_walls = monster.check_collision(walls)
                 if not collision_walls:
                     break

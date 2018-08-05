@@ -19,6 +19,7 @@ class Game(object):
     drawer: Drawer
     ready: bool = False
     step_lock: Lock
+    npcs_left: int
 
     WIDTH = 512
     HEIGHT = 512
@@ -32,6 +33,7 @@ class Game(object):
         self.player_spawns = {}
         self.npc_spawns = []
         self.players = []
+        self.npcs_left = 20
 
         self.logic = GameLogic(self)
         self.drawer = None

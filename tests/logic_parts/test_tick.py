@@ -1,6 +1,6 @@
 from battle_city.basic import Direction
 from battle_city.game import Game
-from battle_city.monsters import Bullet, NPC, Player
+from battle_city.monsters import NPC, Player
 from battle_city.logic import TickLogicPart
 
 import pytest

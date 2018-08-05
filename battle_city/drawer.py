@@ -1,3 +1,5 @@
+from pygame.font import SysFont
+
 from battle_city.basic import Direction
 from battle_city.monsters.wall import Wall, Metal, Water
 
@@ -5,6 +7,7 @@ from pygame.image import load as img_load
 from pygame.display import set_mode, flip
 from pygame.transform import rotate
 from pygame.draw import rect as draw_rect
+from pygame import init as pygame_init
 
 
 from os import path
@@ -51,9 +54,21 @@ class Drawer(object):
     SCREEN_HEIGHT = 600
     OFFSET = 32
 
+    OFFSET_LABELS_X = 550
+    OFFSET_LABELS_Y = 32
+    FONT_SIZE = 24
+
+    PLAYER_COLORS = [
+        (255, 255, 0),
+        (0, 255, 0),
+    ]
+
+
     def __init__(self, game):
+        pygame_init()
         self.time = 0
         self.screen = set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
+        self.font = SysFont('monospace', self.FONT_SIZE, bold=True)
         self.game = game
 
     def render(self):
@@ -105,7 +120,24 @@ class Drawer(object):
             self.screen.blit(image, cords, area)
 
     def _render_text(self):
-        pass
+        self._render_label('BATTLE CITY AI', (0, 0))
+        self._render_label(f'NPCs left: {self.game.npcs_left}', (0, 40))
+        self._render_label(f'NPCs in area: {len(self.game.npcs)}', (0, 80))
+        self._render_label(f'Time: {self.time}', (0, 120))
+
+        if not self.game.is_ready():
+            self._render_label(f'NOT READY', (0, 180))
+
+        for num, player in enumerate(self.game.players, start=1):
+            connected_label = '' if player.connection else ' WAIT'
+            label = f'P{player.player_id}{connected_label}: {player.score:06d}'
+            color = self.PLAYER_COLORS[player.player_id]
+            self._render_label(label, (0, 200 + 40 * num), color)
+
+    def _render_label(self, label: str, cords, color=(255, 255, 255)):
+        image = self.font.render(label, 1, color)
+        new_cords = (self.OFFSET_LABELS_X + cords[0], self.OFFSET_LABELS_Y + cords[1])
+        self.screen.blit(image, new_cords)
 
     def _blit_simple(self, image, monster):
         position = monster.position
