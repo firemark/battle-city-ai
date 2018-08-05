@@ -121,16 +121,16 @@ class Drawer(object):
 
     def _render_text(self):
         self._render_label('BATTLE CITY AI', (0, 0))
-        self._render_label(f'NPCs left: {self.game.npcs_left:03d}', (0, 40))
+        self._render_label(f'NPCs left:    {self.game.npcs_left:03d}', (0, 40))
         self._render_label(f'NPCs in area: {len(self.game.npcs):03d}', (0, 80))
-        self._render_label(f'Time left: {self.game.time_left:04d}', (0, 120))
+        self._render_label(f'Time left:    {self.game.time_left:03d}', (0, 120))
 
         if not self.game.is_ready():
             self._render_label(f'NOT READY', (0, 180))
 
         for num, player in enumerate(self.game.players, start=1):
-            connected_label = '' if player.connection else ' WAIT'
-            label = f'P{player.player_id}{connected_label}: {player.score:06d}'
+            name_label = f'P{player.player_id}' if player.connection else '??'
+            label = f'{name_label}: {player.score:06d}'
             color = self.PLAYER_COLORS[player.player_id]
             self._render_label(label, (0, 200 + 40 * num), color)
 
