@@ -3,8 +3,6 @@ from battle_city.game import Game
 from battle_city.action_handler import ActionHandler
 from battle_city.connection import PlayerConnection
 
-import json
-
 
 async def game_loop(game: Game):
     while True:

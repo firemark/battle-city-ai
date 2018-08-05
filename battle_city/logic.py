@@ -100,7 +100,7 @@ class TickLogicPart(LogicPart):
     async def spawn_npc(self):
         if len(self.game.npcs) >= self.game.MAX_NPC_IN_AREA:
             return
-        if random() > 0.1:
+        if random() > 0.6 / (len(self.game.npcs) + 1):
             return
 
         spawn = choice(self.game.npc_spawns)

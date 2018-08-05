@@ -17,6 +17,7 @@ async def handle_client(loop):
         data = json.loads(raw_data)
         print(data)
 
+
 def change_state_callback(loop, writer):
     # wtf? py3 why?
     ensure_future(change_state(loop, writer))
