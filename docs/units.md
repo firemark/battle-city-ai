@@ -27,8 +27,8 @@ When unit is spawned or changed (direction, speed or sth) then server sends all 
     "type": TYPE,
     "speed": SPEED, // int
     "position": {"x": x, "y": Y},
-    "direction": "up"|"down"|"left"|"right"
-    "is_freeze": true|false,
+    "direction": "up"|"down"|"left"|"right",
+    "is_freeze": true|false
 }
 ```
 
@@ -37,6 +37,6 @@ When unit is spawned or changed (direction, speed or sth) then server sends all 
 {
     "status": "data",
     "action": "destroy",
-    "id": HEX,
+    "id": HEX
 }
 ```
