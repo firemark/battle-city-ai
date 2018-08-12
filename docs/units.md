@@ -33,7 +33,7 @@ When unit is spawned or changed (direction, speed or sth) then server sends all 
 ```
 
 ## Destroy
-```
+```js
 {
     "status": "data",
     "action": "destroy",
