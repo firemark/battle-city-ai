@@ -3,7 +3,7 @@ To change state of player tank we need to send actions with specified format:
 
 ### Request
 
-```json
+```js
 {"action": ACTION_NAME, "additional_args": "sth"}
 ```
 
@@ -33,8 +33,8 @@ Need to set name of player and get map. Name of player must be 6 char length and
     "status": "OK",
     "id": YOUR_HEX,
     "cords": [
-        {"type": "wall", "id": "HEX", "position": {"x": X, "y": Y},
-        {"type": "tank", "id": "HEX", "position": {"x": X, "y": Y},
+        {"type": "tiny_wall", "id": "HEX", "position": {"x": X, "y": Y},
+        {"type": "player", "id": "HEX", "position": {"x": X, "y": Y},
         …
     ]
 }
