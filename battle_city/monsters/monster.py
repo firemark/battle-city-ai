@@ -64,6 +64,7 @@ class Monster(object):
         return dict(
             status='data',
             action='move',
+            id=self.id.hex,
             position=self.get_position(),
         )
 

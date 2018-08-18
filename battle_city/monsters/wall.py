@@ -6,47 +6,34 @@ from pygame import Rect
 
 class Wall(object):
     id: UUID
-    is_destroyed: bool
     position: Rect
     SIZE = 32
-    PART_SIZE = 8
 
     def __init__(self, x: int, y: int):
         self.id = uuid4()
         size = self.SIZE
         self.position = Rect(x, y, size, size)
-        self.is_destroyed = False
 
-    def hurt(self, direction: Direction):
-        position = self.position
-        part = self.PART_SIZE
-        if self.is_destroyed:
-            return True
+    def hurt(self, direction: Direction) -> (bool, bool):
+        """
 
-        if direction == Direction.UP:
-            position.height -= part
-        elif direction == Direction.DOWN:
-            position.height -= part
-            position.y += part
-        elif direction == Direction.RIGHT:
-            position.width -= part
-            position.x += part
-        elif direction == Direction.LEFT:
-            position.width -= part
+        :param direction:
+        :return: (is_destroyed, is_touched)
+        """
+        return True, True
 
-        if position.width == 0 or position.height == 0:
-            self.is_destroyed = True
 
-        return True
+class TinyWall(Wall):
+    SIZE = 8
 
 
 class Metal(Wall):
 
-    def hurt(self, direction: Direction):
-        return True
+    def hurt(self, direction: Direction) -> (bool, bool):
+        return False, True
 
 
 class Water(Wall):
 
     def hurt(self, direction: Direction):
-        return False
+        return False, False

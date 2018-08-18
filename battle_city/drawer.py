@@ -1,7 +1,7 @@
 from pygame.font import SysFont
 
 from battle_city.basic import Direction
-from battle_city.monsters.wall import Wall, Metal, Water
+from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
 from pygame.image import load as img_load
 from pygame.display import set_mode, flip
@@ -40,7 +40,7 @@ BULLET = _load_pack('bullet')
 FREEZE = _load_simple('freeze')
 
 WALLS = {
-    Wall: _load_simple('wall'),
+    TinyWall: _load_simple('wall'),
     Metal: _load_simple('metal'),
     Water: _load_simple('water'),
 }
@@ -62,7 +62,6 @@ class Drawer(object):
         (255, 255, 0),
         (0, 255, 0),
     ]
-
 
     def __init__(self, game):
         pygame_init()
@@ -115,7 +114,9 @@ class Drawer(object):
         for wall in self.game.walls: 
             position = wall.position
             cords = (self.OFFSET + position.x, self.OFFSET + position.y)
-            area = (0, 0, position.width, position.height)
+            xx = position.x % Wall.SIZE
+            yy = position.y % Wall.SIZE
+            area = (xx, yy, position.width + xx, position.height + yy)
             image = WALLS[type(wall)]
             self.screen.blit(image, cords, area)
 

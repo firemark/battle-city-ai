@@ -159,12 +159,12 @@ class CheckCollisionsLogicPart(LogicPart):
             await self.remove_from_group(bullet_b, bullets)
 
         for bullet, wall in self.check_collision(bullets, walls):
-            is_hurted = wall.hurt(bullet.direction)
+            is_destroyed, is_touched = wall.hurt(bullet.direction)
 
-            if is_hurted:
+            if is_touched:
                 await self.remove_from_group(bullet, bullets)
 
-            if wall.is_destroyed:
+            if is_destroyed:
                 await self.remove_from_group(wall, walls)
                 if bullet.parent_type == 'player':
                     bullet.parent.score += 5
@@ -177,7 +177,6 @@ class CheckCollisionsLogicPart(LogicPart):
 
         self.check_tank_collisions(players)
         self.check_tank_collisions(npcs)
-
 
     async def freeze(self, player: Player):
         player.set_freeze()
@@ -287,13 +286,20 @@ class CheckCollisionsLogicPart(LogicPart):
                 other_pos[axis] -= diff_oth - diff_mon
 
     async def remove_from_group(self, monster, group):
-        data = dict(status='data', action='remove', id=monster.id.hex)
         try:
             group.remove(monster)
         except ValueError:
-            pass
-        else:
-            await self.game.broadcast(data)
+            return
+
+        data = dict(status='data', action='destroy', id=monster.id.hex)
+        await self.game.broadcast(data)
+
+    @staticmethod
+    def check_collision(group_a, group_b):
+        for monster in group_a:
+            collisions = monster.check_collision(group_b)
+            for collision in collisions:
+                yield (monster, collision)
 
     @staticmethod
     def check_collision(group_a, group_b):

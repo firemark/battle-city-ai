@@ -1,6 +1,8 @@
 from battle_city.monsters import Wall, Water, Metal, Spawner
 from os import path
 
+from battle_city.monsters.wall import TinyWall
+
 DIR = path.abspath(path.dirname(__file__))
 MAPS_DIR = path.join(DIR, '..', 'maps')
 
@@ -57,8 +59,11 @@ class MapMaker(object):
         pass
 
     def make_brick(self, char, cords, tile_cords):
-        wall = Wall(*cords)
-        self.game.walls.append(wall)
+        x, y = cords
+        for x_shift in range(0, Wall.SIZE, 8):
+            for y_shift in range(0, Wall.SIZE, 8):
+                wall = TinyWall(x + x_shift, y + y_shift)
+                self.game.walls.append(wall)
 
     def make_water(self, char, cords, tile_cords):
         water = Water(*cords)
@@ -79,4 +84,3 @@ class MapMaker(object):
 
     def make_unknown(self, char, cords, tile_cords):
         raise MapCharError(char, tile_cords)
-
