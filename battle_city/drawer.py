@@ -116,7 +116,7 @@ class Drawer(object):
             cords = (self.OFFSET + position.x, self.OFFSET + position.y)
             xx = position.x % Wall.SIZE
             yy = position.y % Wall.SIZE
-            area = (xx, yy, position.width + xx, position.height + yy)
+            area = (xx, yy, position.width, position.height)
             image = WALLS[type(wall)]
             self.screen.blit(image, cords, area)
 

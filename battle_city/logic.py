@@ -165,9 +165,16 @@ class CheckCollisionsLogicPart(LogicPart):
                 await self.remove_from_group(bullet, bullets)
 
             if is_destroyed:
-                await self.remove_from_group(wall, walls)
-                if bullet.parent_type == 'player':
-                    bullet.parent.score += 5
+
+                walls_to_destroy = bullet.check_collision(
+                    group=walls,
+                    rect=bullet.get_long_collision_rect(),
+                )
+                for wall_to_destroy in walls_to_destroy:
+                    await self.remove_from_group(wall_to_destroy, walls)
+
+                    if bullet.parent_type == 'player':
+                        bullet.parent.score += 1
 
         tanks = list(self.game.get_tanks_chain())
         for tank_a, tank_b in self.check_collision(tanks, tanks):
