@@ -4,7 +4,7 @@ from battle_city.basic import Direction
 from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
 from pygame.image import load as img_load
-from pygame.display import set_mode, flip
+from pygame.display import set_mode, flip, set_caption
 from pygame.transform import rotate
 from pygame.draw import rect as draw_rect
 from pygame import init as pygame_init
@@ -68,6 +68,7 @@ class Drawer(object):
 
     def __init__(self, game):
         pygame_init()
+        set_caption('BATTLE CITY AI')
         self.time = 0
         self.screen = set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
         self.font = SysFont('monospace', self.FONT_SIZE, bold=True)
@@ -87,7 +88,7 @@ class Drawer(object):
         flip()
 
     def _render_background(self):
-        self.screen.fill((64, 64, 64))
+        self.screen.fill((0x5f, 0x57, 0x4f))
         offset = self.OFFSET
         rect_size = (offset, offset, self.game.WIDTH, self.game.HEIGHT)
         draw_rect(self.screen, (0, 0, 0), rect_size)
@@ -147,7 +148,7 @@ class Drawer(object):
             color = self.PLAYER_COLORS[player.player_id]
             self._render_label(label, (0, 200 + 40 * num), color)
 
-    def _render_label(self, label: str, cords, color=(255, 255, 255)):
+    def _render_label(self, label: str, cords, color=(0xff, 0xf1, 0xe8)):
         image = self.font.render(label, 1, color)
         new_cords = (self.OFFSET_LABELS_X + cords[0], self.OFFSET_LABELS_Y + cords[1])
         self.screen.blit(image, new_cords)
