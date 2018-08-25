@@ -33,9 +33,12 @@ def _load_simple(name):
     return img_load(pathfile)
 
 
-IMG_PLAYER_1 = _load_pack('player_1')
-IMG_PLAYER_2 = _load_pack('player_2')
-IMG_NPC = _load_pack('npc')
+IMG_PLAYER_11 = _load_pack('player_11')
+IMG_PLAYER_21 = _load_pack('player_21')
+IMG_NPC_1 = _load_pack('npc_1')
+IMG_PLAYER_12 = _load_pack('player_12')
+IMG_PLAYER_22 = _load_pack('player_22')
+IMG_NPC_2 = _load_pack('npc_2')
 BULLET = _load_pack('bullet')
 FREEZE = _load_simple('freeze')
 
@@ -93,9 +96,9 @@ class Drawer(object):
         players = self.game.alive_players
         for player in players:
             if player.player_id == 0:
-                image = IMG_PLAYER_1
+                image = IMG_PLAYER_11 if self.time * player.speed * 0.8 % 2 > 1 else IMG_PLAYER_12
             elif player.player_id == 1:
-                image = IMG_PLAYER_2
+                image = IMG_PLAYER_21 if self.time * player.speed * 0.8 % 2 > 1 else IMG_PLAYER_22
 
             self._blit(image, player)
             if player.is_freeze and self.time % 30 > 15:
@@ -104,7 +107,8 @@ class Drawer(object):
     def _render_npcs(self):
         npcs = self.game.npcs
         for npc in npcs:
-            self._blit(IMG_NPC, npc)
+            image = IMG_NPC_1 if self.time * npc.speed * 0.8 % 2 > 1 else IMG_NPC_2
+            self._blit(image, npc)
 
     def _render_bullets(self):
         for bullet in self.game.bullets:
