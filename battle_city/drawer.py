@@ -97,9 +97,9 @@ class Drawer(object):
         players = self.game.alive_players
         for player in players:
             if player.player_id == 0:
-                image = IMG_PLAYER_11 if self.time * player.speed * 0.8 % 2 > 1 else IMG_PLAYER_12
-            elif player.player_id == 1:
-                image = IMG_PLAYER_21 if self.time * player.speed * 0.8 % 2 > 1 else IMG_PLAYER_22
+                image = self._get_frame(player, IMG_PLAYER_11, IMG_PLAYER_12)
+            else:
+                image = self._get_frame(player, IMG_PLAYER_21, IMG_PLAYER_22)
 
             self._blit(image, player)
             if player.is_freeze and self.time % 30 > 15:
@@ -108,8 +108,12 @@ class Drawer(object):
     def _render_npcs(self):
         npcs = self.game.npcs
         for npc in npcs:
-            image = IMG_NPC_1 if self.time * npc.speed * 0.8 % 2 > 1 else IMG_NPC_2
+            image = self._get_frame(npc, IMG_NPC_1, IMG_NPC_2)
             self._blit(image, npc)
+
+    def _get_frame(self, obj, img1, img2):
+        prediction = self.time * obj.speed * 0.8 % 2 > 1
+        return img1 if prediction else img2
 
     def _render_bullets(self):
         for bullet in self.game.bullets:
