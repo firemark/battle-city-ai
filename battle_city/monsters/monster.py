@@ -43,11 +43,14 @@ class Monster(object):
     def get_type(self):
         return self.__class__.__name__.lower()
 
-    def check_collision(self, group: List, rect=None):
+    def check_collision_with_group(self, group: List, rect=None):
         rect_group = [monster.position for monster in group]
         rect = rect or self.position
         indices = rect.collidelistall(rect_group)
         return [group[index] for index in indices]
+
+    def check_collision_with_old_position(self, monster):
+        return self.old_position.colliderect(monster.position)
 
     def get_serialized_data(self, action='change'):
         return dict(

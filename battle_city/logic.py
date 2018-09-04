@@ -166,7 +166,7 @@ class CheckCollisionsLogicPart(LogicPart):
 
             if is_destroyed:
 
-                walls_to_destroy = bullet.check_collision(
+                walls_to_destroy = bullet.check_collision_with_group(
                     group=walls,
                     rect=bullet.get_long_collision_rect(),
                 )
@@ -180,7 +180,12 @@ class CheckCollisionsLogicPart(LogicPart):
         for tank_a, tank_b in self.check_collision(tanks, tanks):
             if tank_a is tank_b:
                 continue
-            self.move_monster_with_monster(tank_a, tank_b)
+
+            # we need to check who was in this field first
+            if not tank_a.check_collision_with_old_position(tank_b):
+                self.move_monster_with_static_obj(tank_a, tank_b)
+            else:
+                self.move_monster_with_static_obj(tank_b, tank_a)
 
         self.check_tank_collisions(players)
         self.check_tank_collisions(npcs)
@@ -207,7 +212,7 @@ class CheckCollisionsLogicPart(LogicPart):
             # small probability to infinity loop - we need to cancel on 5th try
             for i in range(5):
                 # check_collision is very greedy - in future we need quadtree structure
-                collision_walls = monster.check_collision(walls)
+                collision_walls = monster.check_collision_with_group(walls)
                 if not collision_walls:
                     break
                 wall = collision_walls[0]
@@ -231,6 +236,7 @@ class CheckCollisionsLogicPart(LogicPart):
 
     @classmethod
     def move_monster_with_monster(cls, monster, other):
+        # probably will be removed in future
         cls.move_monster_with_monster_axis(monster, other, axis=0)
         cls.move_monster_with_monster_axis(monster, other, axis=1)
 
@@ -304,14 +310,7 @@ class CheckCollisionsLogicPart(LogicPart):
     @staticmethod
     def check_collision(group_a, group_b):
         for monster in group_a:
-            collisions = monster.check_collision(group_b)
-            for collision in collisions:
-                yield (monster, collision)
-
-    @staticmethod
-    def check_collision(group_a, group_b):
-        for monster in group_a:
-            collisions = monster.check_collision(group_b)
+            collisions = monster.check_collision_with_group(group_b)
             for collision in collisions:
                 yield (monster, collision)
 
