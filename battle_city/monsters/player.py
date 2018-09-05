@@ -25,8 +25,3 @@ class Player(Tank):
 
     def set_game_over(self):
         self.is_game_over = True
-
-    def get_serialized_data(self, action='change'):
-        data = super().get_serialized_data(action=action)
-        data['player_id'] = self.player_id
-        return data

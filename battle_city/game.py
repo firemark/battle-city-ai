@@ -3,6 +3,8 @@ from battle_city.logic import GameLogic
 from battle_city.drawer import Drawer
 from battle_city.map_maker import MapMaker
 
+from battle_city import messages
+
 from typing import List, Dict
 from asyncio import wait, Lock
 from itertools import chain
@@ -95,7 +97,7 @@ class Game(object):
 
     async def send_informations(self):
         for monster in self.get_monsters_chain():
-            data = monster.get_serialized_move_data()
+            data = messages.get_monster_serialized_move_data(monster)
             await self.broadcast(data)
 
     async def step(self):

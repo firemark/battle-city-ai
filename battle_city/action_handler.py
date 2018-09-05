@@ -2,6 +2,8 @@ from battle_city.game import Game
 from battle_city.basic import Direction
 from battle_city.monsters import Player
 
+from battle_city import messages
+
 
 class ActionHandler(object):
 
@@ -68,5 +70,6 @@ class ActionHandler(object):
     @staticmethod
     async def set_had_action(player: Player, game: Game):
         player.set_had_action()
-        await game.broadcast(player.get_serialized_data())
+        data = messages.get_monster_serialized_data(player)
+        await game.broadcast(data)
 

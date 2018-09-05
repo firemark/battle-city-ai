@@ -52,26 +52,6 @@ class Monster(object):
     def check_collision_with_old_position(self, monster):
         return self.old_position.colliderect(monster.position)
 
-    def get_serialized_data(self, action='change'):
-        return dict(
-            status='data',
-            action=action,
-            id=self.id.hex,
-            type=self.get_type(),
-            speed=self.speed,
-            position=self.get_position(),
-            is_freeze=self.is_freeze,
-            direction=self.direction.value,
-        )
-
-    def get_serialized_move_data(self):
-        return dict(
-            status='data',
-            action='move',
-            id=self.id.hex,
-            position=self.get_position(),
-        )
-
     def get_position(self):
         return dict(
             x=self.position.x,

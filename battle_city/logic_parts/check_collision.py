@@ -2,6 +2,8 @@ from battle_city.logic_parts.base import LogicPart
 from battle_city.monsters.monster import Monster
 from battle_city.monsters.player import Player
 
+from battle_city import messages
+
 
 class CheckCollisionsLogicPart(LogicPart):
 
@@ -72,7 +74,7 @@ class CheckCollisionsLogicPart(LogicPart):
 
     async def freeze(self, player: Player):
         player.set_freeze()
-        data = player.get_serialized_data(action='freeze')
+        data = messages.get_monster_serialized_data(player, action='freeze')
         await self.game.broadcast(data)
 
     def is_monster_in_area(self, monster):

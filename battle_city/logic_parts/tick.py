@@ -2,6 +2,7 @@ from battle_city.basic import Direction
 from battle_city.logic_parts.base import LogicPart
 from battle_city.monsters.bullet import Bullet
 from battle_city.monsters.npc import NPC
+from battle_city import messages
 
 
 from random import random, choice
@@ -70,7 +71,7 @@ class TickLogicPart(LogicPart):
         bullet.set_direction(direction)
         bullet.set_parent(tank)
 
-        data = bullet.get_serialized_data(action='spawn')
+        data = messages.get_monster_serialized_data(bullet, action='spawn')
         await self.game.broadcast(data)
 
         self.game.bullets.append(bullet)
@@ -85,7 +86,7 @@ class TickLogicPart(LogicPart):
         npc = NPC(*spawn)
         self.game.npcs.append(npc)
         self.game.npcs_left -= 1
-        npc_data = npc.get_serialized_data(action='spawn')
+        npc_data = messages.get_monster_serialized_data(npc, action='spawn')
         await self.game.broadcast(npc_data)
 
     async def do_sth_with_npcs(self):
@@ -93,5 +94,5 @@ class TickLogicPart(LogicPart):
             is_changed = npc.do_something()
             if not is_changed:
                 continue
-            npc_data = npc.get_serialized_data()
+            npc_data = messages.get_monster_serialized_data(npc)
             await self.game.broadcast(npc_data)
