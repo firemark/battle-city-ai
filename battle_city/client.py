@@ -15,6 +15,8 @@ async def handle_client(loop):
     while True:
         raw_data = await reader.readline()
         data = json.loads(raw_data)
+        if data.get('action') == 'move':
+            continue
         print(data)
 
 
