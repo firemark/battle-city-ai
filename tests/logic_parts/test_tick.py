@@ -1,7 +1,7 @@
 from battle_city.basic import Direction
 from battle_city.game import Game
 from battle_city.monsters import NPC, Player
-from battle_city.logic import TickLogicPart
+from battle_city.logic_parts.tick import TickLogicPart
 
 import pytest
 

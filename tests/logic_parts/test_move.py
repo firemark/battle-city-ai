@@ -1,6 +1,6 @@
 from battle_city.game import Game
 from battle_city.monsters import Bullet, NPC, Player
-from battle_city.logic import MoveLogicPart
+from battle_city.logic_parts.move import MoveLogicPart
 
 import pytest
 

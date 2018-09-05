@@ -1,6 +1,6 @@
 from battle_city.game import Game
 from battle_city.monsters import Bullet, NPC, Player
-from battle_city.logic import SetOldPositionLogicPart
+from battle_city.logic_parts.set_old_position import SetOldPositionLogicPart
 
 import pytest
 
