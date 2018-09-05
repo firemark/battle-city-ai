@@ -21,14 +21,14 @@ Goals are two:
 
 ### Scores
 
-* 1 for each destroyed tiny-brick
-* 5 for each 'freeze' second player
-* 200 for each destroyed NPC tank
-* TODO: 300 for each coin
+* **1** for each destroyed tiny-brick
+* **5** for each 'freeze' second player
+* **200** for each destroyed NPC tank
+* TODO: **300** for each coin
 
 ## Protocol documentation
 
-Are [here](docs/).
+Is [here](docs/).
 
 ## How to write first bot?
 
