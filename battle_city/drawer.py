@@ -1,16 +1,17 @@
-from pygame.font import SysFont
-
 from battle_city.basic import Direction
 from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
+from pygame.font import SysFont
 from pygame.image import load as img_load
 from pygame.display import set_mode, flip, set_caption
 from pygame.transform import rotate
 from pygame.draw import rect as draw_rect
 from pygame import init as pygame_init
 
-
 from os import path
+
+import pygame
+
 
 DIR = path.abspath(path.dirname(__file__))
 IMAGES_DIR = path.join(DIR, '..', 'images')
@@ -75,6 +76,8 @@ class Drawer(object):
         self.game = game
 
     def render(self):
+        self._support_pygame_events()
+
         self.time = self.time + 1
         if self.time >= 100:
             self.time = 0
@@ -86,6 +89,14 @@ class Drawer(object):
         self._render_walls()
         self._render_text()
         flip()
+
+    def _support_pygame_events(self):
+        events = pygame.event.get()
+
+        for event in events:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    exit(0)
 
     def _render_background(self):
         self.screen.fill((0x5f, 0x57, 0x4f))
