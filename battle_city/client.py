@@ -47,6 +47,8 @@ class Game(object):
 
         if data.get('status') == 'ERROR':
             color = '\033[91m'  # red color
+        elif data.get('status') == 'game':
+            color = '\033[34m'  # blue color
         elif data.get('action') == 'spawn':
             color = '\033[92m'  # green color
         elif data.get('action') == 'destroy':

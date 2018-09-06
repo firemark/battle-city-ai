@@ -70,6 +70,7 @@ async def test_do_it_after_ticks():
             spawn_bullets=DEFAULT,
             spawn_npc=DEFAULT,
             unset_player_actions=DEFAULT,
+            send_info=DEFAULT,
             do_sth_with_npcs=DEFAULT) as patch_values:
         await logic.do_it_after_ticks()
 
@@ -77,6 +78,7 @@ async def test_do_it_after_ticks():
     patch_values['spawn_npc'].assert_called_once_with()
     patch_values['do_sth_with_npcs'].assert_called_once_with()
     patch_values['spawn_bullets'].assert_called_once_with()
+    patch_values['send_info'].assert_called_once_with()
 
     assert game.time_left == 249
 
@@ -164,6 +166,20 @@ async def test_spawn_npc(random_mock):
         is_freeze=False,
         direction='down',
     ))
+
+
+@pytest.mark.asyncio
+@patch('battle_city.logic_parts.tick.messages')
+async def test_send_info(messages):
+    game = Game()
+    logic = TickLogicPart(game)
+    messages.get_tick_game_data.return_value = dict(socek='socek')
+
+    with patch.object(game, 'broadcast') as broadcast_mock:
+        await logic.send_info()
+
+    broadcast_mock.assert_called_once_with(dict(socek='socek'))
+    messages.get_tick_game_data.assert_called_once_with(game)
 
 
 # todo - check single spawn bullet with directions

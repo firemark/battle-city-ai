@@ -30,8 +30,13 @@ class TickLogicPart(LogicPart):
         await self.spawn_bullets()
         await self.spawn_npc()
         await self.do_sth_with_npcs()
+        await self.send_info()
 
         self.game.time_left -= 1
+
+    async def send_info(self):
+        data = messages.get_tick_game_data(self.game)
+        await self.game.broadcast(data)
 
     async def unset_player_actions(self):
         for player in self.game.alive_players:

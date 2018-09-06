@@ -1,9 +1,6 @@
 from battle_city.action_handler import ActionHandler
-
-from .utils import make_game, make_player
-
+from .utils import make_game, make_player, patch_messages
 from asynctest.mock import patch
-
 import pytest
 
 patch_messages = patch('battle_city.action_handler.messages')

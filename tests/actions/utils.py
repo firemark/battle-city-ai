@@ -2,8 +2,9 @@ from battle_city.connection import PlayerConnection
 from battle_city.game import Game
 from battle_city.monsters import Player
 
-from asynctest.mock import CoroutineMock
+from asynctest.mock import patch, CoroutineMock
 
+patch_messages = patch('battle_city.action_handler.messages')
 
 def make_player():
     player = Player(x=1, y=2, player_id=0)

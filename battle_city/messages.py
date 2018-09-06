@@ -33,3 +33,37 @@ def get_world_data(player, game):
         id=player.id.hex,
         cords=[get_basic_data(monster) for monster in game.get_all_chain()]
     )
+
+
+def get_start_game_data():
+    return dict(
+        status='game',
+        action='start',
+    )
+
+
+def get_over_game_data(game):
+    players = sorted(game.alive_players, key=lambda player: -player.score)
+    try:
+        player = players[0]
+    except KeyError:
+        return dict(
+            status='game',
+            action='over',
+            winner=None,
+        )
+
+    return dict(
+        status='game',
+        action='over',
+        winner=player.id.hex,
+    )
+
+
+def get_tick_game_data(game):
+    return dict(
+        status='game',
+        action='info',
+        ticks_left=game.time_left,
+        npcs_left=len(game.npcs),
+    )

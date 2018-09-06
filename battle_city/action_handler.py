@@ -96,7 +96,6 @@ class ActionHandler(object):
         data = messages.get_world_data(player, game)
         await cls.write_ok(player, **data)
 
-
     @staticmethod
     async def set_had_action(player: Player, game: Game):
         player.set_had_action()
