@@ -70,7 +70,7 @@ class ActionHandler(object):
     @classmethod
     async def action_greet(cls, data: dict, player: Player, game: Game):
         if player.ready:
-            await cls.write_error(player, 'your are greeted before')
+            await cls.write_error(player, 'you are greeted before')
             return
 
         try:

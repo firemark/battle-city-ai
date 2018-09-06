@@ -78,3 +78,17 @@ async def test_action_greet_with_too_long_name():
         'status': 'ERROR',
         'message': 'name is too long (max is 10)',
     })
+
+
+@pytest.mark.asyncio
+async def test_action_greet_again():
+    player = make_player()
+    player.ready = True
+    game = make_game(player)
+
+    await ActionHandler.action_greet({'name': 'a'}, player, game)
+
+    player.connection.write.assert_called_once_with({
+        'status': 'ERROR',
+        'message': 'you are greeted before',
+    })
