@@ -61,7 +61,7 @@ async def test_do_actions_after_10_ticks():
 async def test_do_it_after_ticks():
     game = Game()
     game.time_left = 250
-    game.players = [Player(0, 128, 128)]
+    game.alive_players = [Player(0, 128, 128)]
     game.npcs = [NPC(128, 128)]
     logic = TickLogicPart(game)
 
@@ -84,19 +84,19 @@ async def test_do_it_after_ticks():
 @pytest.mark.asyncio
 async def test_unfreeze_players():
     game = Game()
-    game.players = [Player(0, 128, 128), Player(1, 128, 128)]
+    game.alive_players = [Player(0, 128, 128), Player(1, 128, 128)]
     logic = TickLogicPart(game)
 
     await logic.unfreeze_players()
 
-    assert not game.players[0].is_freeze
-    assert not game.players[1].is_freeze
+    assert not game.alive_players[0].is_freeze
+    assert not game.alive_players[1].is_freeze
 
 
 @pytest.mark.asyncio
 async def test_unset_player_actions():
     game = Game()
-    game.players = [Player(0, 128, 128), Player(1, 128, 128)]
+    game.alive_players = [Player(0, 128, 128), Player(1, 128, 128)]
     for player in game.players:
         player.set_had_action()
 
@@ -104,32 +104,32 @@ async def test_unset_player_actions():
 
     await logic.unset_player_actions()
 
-    assert not game.players[0].had_action
-    assert not game.players[1].had_action
+    assert not game.alive_players[0].had_action
+    assert not game.alive_players[1].had_action
 
 
 @pytest.mark.asyncio
 async def test_spawn_bullets():
     game = Game()
-    game.players = [Player(0, 128, 128)]
+    game.alive_players = [Player(0, 128, 128)]
     game.npcs = [NPC(128, 128)]
     logic = TickLogicPart(game)
 
-    game.players[0].set_direction(Direction.DOWN)
+    game.alive_players[0].set_direction(Direction.DOWN)
     game.npcs[0].set_direction(Direction.LEFT)
 
-    game.players[0].set_shot()
+    game.alive_players[0].set_shot()
     game.npcs[0].set_shot()
 
     with patch.object(game, 'broadcast') as broadcast_mock:
         await logic.spawn_bullets()
 
-    assert not game.players[0].is_shot
+    assert not game.alive_players[0].is_shot
     assert not game.npcs[0].is_shot
 
     player_bullet, npc_bullet = game.bullets
 
-    assert player_bullet.parent_id is game.players[0].id
+    assert player_bullet.parent_id is game.alive_players[0].id
     assert player_bullet.direction == Direction.DOWN
     assert player_bullet.get_position() == {'x': 128 + 16 - 2, 'y': 128 + 32 + 4}
 
@@ -141,7 +141,7 @@ async def test_spawn_bullets():
 
 
 @pytest.mark.asyncio
-@patch('battle_city.logic.random')
+@patch('battle_city.logic_parts.tick.random')
 async def test_spawn_npc(random_mock):
     game = Game()
     game.npc_spawns = [Spawner(x=128, y=128)]

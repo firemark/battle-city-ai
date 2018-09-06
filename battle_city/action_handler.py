@@ -65,7 +65,37 @@ class ActionHandler(object):
                 return
             player.set_shot()
             await cls.set_had_action(player, game)
-        await cls.write_ok(player) 
+        await cls.write_ok(player)
+
+    @classmethod
+    async def action_greet(cls, data: dict, player: Player, game: Game):
+        if player.ready:
+            await cls.write_error(player, 'your are greeted before')
+            return
+
+        try:
+            name = data['name']
+        except KeyError:
+            await cls.write_error(player, 'name is undefined')
+            return
+
+        if not isinstance(name, str):
+            await cls.write_error(player, 'name has wrong type')
+            return
+
+        name = name.strip()
+        if not name:
+            await cls.write_error(player, 'name is blank')
+            return
+
+        if len(name) > 10:
+            await cls.write_error(player, 'name is too long (max is 10)')
+            return
+
+        player.set_nick(name)
+        data = messages.get_world_data(player, game)
+        await cls.write_ok(player, **data)
+
 
     @staticmethod
     async def set_had_action(player: Player, game: Game):

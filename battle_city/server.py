@@ -27,7 +27,10 @@ def handle_connection(game):
 
 async def handle_actions(connection, player, game):
     while True:
-        data = await connection.read()
+        try:
+            data = await connection.read()
+        except ConnectionError:
+            return
         await handle_action(connection, data, player, game)
        
 

@@ -9,7 +9,7 @@ import pytest
 async def test_set_old_position():
     game = Game()
     game.bullets = [Bullet(128, 128)]
-    game.players = [Player(x=128, y=128, player_id=0)]
+    game.alive_players = [Player(x=128, y=128, player_id=0)]
     game.npcs = [NPC(128, 128)]
 
     for monster in game.get_monsters_chain():
@@ -17,6 +17,6 @@ async def test_set_old_position():
 
     await SetOldPositionLogicPart(game).do_it()
 
-    for monster in game.bullets + game.players + game.npcs:
+    for monster in game.bullets + game.alive_players + game.npcs:
         assert monster.old_position.x == 42
         assert monster.old_position.y == 24

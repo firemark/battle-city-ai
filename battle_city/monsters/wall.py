@@ -14,6 +14,15 @@ class Wall(object):
         size = self.SIZE
         self.position = Rect(x, y, size, size)
 
+    def get_type(self):
+        return self.__class__.__name__.lower()
+
+    def get_position(self):
+        return dict(
+            x=self.position.x,
+            y=self.position.y,
+        )
+
     def hurt(self, direction: Direction) -> (bool, bool):
         """
 

@@ -84,6 +84,14 @@ class Game(object):
             self.bullets,
         )
 
+    def get_all_chain(self):
+        return chain(
+            self.alive_players,
+            self.npcs,
+            self.bullets,
+            self.walls,
+        )
+
     def get_tanks_chain(self):
         return chain(self.alive_players, self.npcs)
 

@@ -11,16 +11,16 @@ async def test_move():
 
     # default direction is UP
     game.bullets = [Bullet(128, 128)]
-    game.players = [Player(x=128, y=128, player_id=0)]
+    game.alive_players = [Player(x=128, y=128, player_id=0)]
 
     # but default direction of NPC is DOWN
     game.npcs = [NPC(128, 128)]
 
-    game.players[0].set_speed(2)
+    game.alive_players[0].set_speed(2)
     game.npcs[0].set_speed(2)
 
     await MoveLogicPart(game).do_it()
 
-    assert game.players[0].get_position() == {'x': 128, 'y': 128 - 2}
+    assert game.alive_players[0].get_position() == {'x': 128, 'y': 128 - 2}
     assert game.npcs[0].get_position() == {'x': 128, 'y': 128 + 2}
-    assert game.bullets[0].get_position() == {'x': 128, 'y': 128 - 10}
+    assert game.bullets[0].get_position() == {'x': 128, 'y': 128 - 8}

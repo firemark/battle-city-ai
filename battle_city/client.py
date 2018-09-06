@@ -10,6 +10,7 @@ class Game(object):
         self.loop = loop
         self.reader = reader
         self.writer = writer
+        self.first_tick = False
 
         loop.call_soon(self._loop)
 
@@ -17,6 +18,10 @@ class Game(object):
         """
         sometimes execute any random action
         """
+        if not self.first_tick:
+            await self.send(dict(action='greet', name='TEST'))
+            self.first_tick = True
+
         action = randint(0, 2)
 
         if action == 0:
@@ -65,7 +70,7 @@ class Game(object):
 
 
 async def handle_client(loop):
-    reader, writer = await open_connection('127.0.0.1', 8888, loop=loop)
+    reader, writer = await open_connection('127.0.0.1', 8888, loop=loop, limit=256 * 1000)
     print('\033[1mCONNECTED!\033[0m')
 
     game = Game(loop, reader, writer)

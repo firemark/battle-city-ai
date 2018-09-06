@@ -7,6 +7,7 @@ class Player(Tank):
     ready: bool = False
     connection = None
     is_game_over: bool = False
+    nick: str = None
 
     had_action: bool = False
     
@@ -18,10 +19,14 @@ class Player(Tank):
 
     def set_connection(self, connection):
         self.connection = connection
-        self.ready = True
 
     def set_had_action(self):
         self.had_action = True
 
     def set_game_over(self):
         self.is_game_over = True
+
+    def set_nick(self, nick: str):
+        self.nick = nick
+        self.ready = True
+
