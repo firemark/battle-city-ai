@@ -53,6 +53,13 @@ Your bot will be as yellow tank.
 python -m battle_city.server [--ip IP] [--port PORT] [--hide-window]
 ```
 
+## Run tests
+
+```sh
+pip install -e .[test]
+pytest tests/
+```
+
 ## How does this work?
 
 Server on startup create a simple server and window with game and listens for the two connections.
