@@ -1,11 +1,14 @@
-Every object has `id` field and `x, y` coordinations.
+Every object has `id` field and `x, y` coordination.
+
+![image](game.png)
+
 
 # Solid types
 Solid objects have only type (`tinywall/water/metal`) and coordinations
 
 ## Tiny Wall
 * type: `tinywall`
-* size: `32x32`
+* size: `8x8`
 
 can be destroyed with bullets.
 
@@ -27,7 +30,9 @@ Unbreakable wall.
 * size: `32x32`
 
 To identify your tank you need `id` field from `greetings` response.
-This object sends information about speed/coordinations/direction and shots.
+This object sends (described [here](units.md))
+information about speed/coordinations/direction and shots.
+
 
 ## NPC
 * type: `npc`

@@ -30,6 +30,12 @@ Goals are two:
 
 Is [here](docs/).
 
+* [General Protocol](docs/protocol.md)
+* [Player actions](docs/actions.md)
+* [Unit's messages](docs/units.md)
+* [Game's messages](docs/game.md)
+* [Types in game](docs/types.md)
+
 ## How to write first bot?
 
 Copy a [example code](battle_city/client.py) and run:

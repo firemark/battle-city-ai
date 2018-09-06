@@ -6,7 +6,7 @@ To determine action of object (destroy/move/change/spawn) you can use `action` f
 
 ## Move status
 
-Sends only basic informations about movement
+Sends only basic information about movement
 ```js
 {
     "status": "data",
@@ -26,11 +26,18 @@ When unit is spawned or changed (direction, speed or sth) then server sends all 
     "id": HEX,
     "type": TYPE,
     "speed": SPEED, // int
-    "position": {"x": x, "y": Y},
+    "position": {"x": X, "y": Y},
     "direction": "up"|"down"|"left"|"right",
     "is_freeze": true|false
 }
 ```
+
+### Possible actions
+
+* `change` - when object is changed - like another speed or direction.
+* `spawn` - when object is created - shot bullet or new NPC in the area
+* `freeze` - when player was shot by another player. This player can't move.
+* `unfreeze` - when is player is not freezed and can move.
 
 ## Destroy
 ```js
