@@ -152,16 +152,19 @@ class Drawer(object):
             self._render_label(f'GAME OVER', (0, 180), color=(255, 0, 0))
 
         for num, player in enumerate(self.game.players, start=1):
-            name_label = f'P{player.player_id}'
+            name_label = player.nick or f'P{player.player_id}'
             if player.is_game_over and self.time > 50:
                 info_label = 'KILLED'
             elif not player.connection:
                 info_label = 'WAIT'
+            elif player.is_freeze:
+                info_label = 'FREEZE'
             else:
                 info_label = ''
-            label = f'{name_label}: {player.score:06d} {info_label}'
+            label = f'{name_label:10} {player.score:06d}'
             color = self.PLAYER_COLORS[player.player_id]
             self._render_label(label, (0, 200 + 40 * num), color)
+            self._render_label(info_label, (0, 220 + 40 * num), color)
 
     def _render_label(self, label: str, cords, color=(0xff, 0xf1, 0xe8)):
         image = self.font.render(label, 1, color)
