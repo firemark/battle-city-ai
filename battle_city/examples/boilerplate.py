@@ -1,5 +1,4 @@
 from asyncio import get_event_loop, open_connection, ensure_future
-from random import randint, choice
 
 import json
 
@@ -17,25 +16,12 @@ class Game(object):
     async def loop_game(self):
         """
         sometimes execute any random action
-        for example this tank make random choices (is a dummy tank!)
         """
         if not self.first_tick:
             await self.send(dict(action='greet', name='TEST'))
             self.first_tick = True
 
-        action = randint(0, 2)
-
-        if action == 0:
-            speed = randint(0, 2)
-            data = dict(action='set_speed', speed=speed)
-        elif action == 1:
-            direction = choice(['up', 'down', 'left', 'right'])
-            data = dict(action='rotate', direction=direction)
-        else:
-            data = dict(action='shot')
-
-        await self.send(data)
-
+        # await self.send(json_data)
         seconds_to_wait = 0.25
         loop.call_later(seconds_to_wait, self._loop)
 
@@ -44,21 +30,7 @@ class Game(object):
         get json from server and do something
         for example show on console data
         """
-        if data.get('action') == 'move':
-            return  # too many data ;_;
-
-        if data.get('status') == 'ERROR':
-            color = '\033[91m'  # red color
-        elif data.get('status') == 'game':
-            color = '\033[34m'  # blue color
-        elif data.get('action') == 'spawn':
-            color = '\033[92m'  # green color
-        elif data.get('action') == 'destroy':
-            color = '\033[93m'  # orange color
-        else:
-            color = '\033[0m'  # default color
-
-        print(color, data, '\033[0m')
+        pass
 
     async def send(self, data):
         if data is None:
@@ -75,10 +47,7 @@ class Game(object):
 
 async def handle_client(loop):
     reader, writer = await open_connection('127.0.0.1', 8888, loop=loop, limit=256 * 1000)
-    print('\033[1mCONNECTED!\033[0m')
-
     game = Game(loop, reader, writer)
-
     while True:
         raw_data = await reader.readline()
         data = json.loads(raw_data)
