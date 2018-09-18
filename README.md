@@ -88,21 +88,21 @@ Now:
 # scripts have a optional argument -a for player A and -b for player B
 # command would be a runner, example "python copied_client.py" - remember about command (python, nodejs, ruby or something else) to run your script!!
 # default command for -a and -b is "python -m battle_city.client"
-# ./test_it.sh [-a CMD_A] [-b CMD_B]
+# ./run_game.sh [-a CMD_A] [-b CMD_B]
 
 # linux/mingw/osx/wsl
-./test_it.sh -a "python copied_client.py"
+./run_game.sh -a "python copied_client.py"
 # The color of your tank will be yellow.
 # tmux version - more hackerable!
-./test_it_tmux.sh -a "python copied_client.py"
+./run_game_tmux.sh -a "python copied_client.py"
 ```
 
-The `test_it.sh` script will run the whole game with two clients. There is no need to run anything else.
+The `run_game.sh` script will run the whole game with two clients. There is no need to run anything else.
 The script includes a command for running server and commands for running two clients. The basic clients are dummy.
 They will just move randomly.
 If you want to start implementing your algorithms for moves, create your own
 client, based on the example [example code](battle_city/client.py), and after finishing, 
-use it in `test_it.sh` script (examples are above).
+use it in `run_game.sh` script (examples are above).
 
 ## Server script
 
@@ -110,7 +110,7 @@ use it in `test_it.sh` script (examples are above).
 python -m battle_city.server [--ip IP] [--port PORT] [--hide-window]
 ```
 
-Note that `test_it.sh` script runs the server as well as both clients by default.
+Note that `run_game.sh` script runs the server as well as both clients by default.
 If you want to create your own configuration for running the game, use the command above 
 in your own script.
 
