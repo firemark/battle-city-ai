@@ -1,4 +1,5 @@
 # battle-city-ai
+[![Build Status](https://travis-ci.org/firemark/battle-city-ai.svg?branch=master)](https://travis-ci.org/firemark/battle-city-ai)
 
 ## Legend
 

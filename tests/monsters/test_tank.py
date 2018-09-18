@@ -2,8 +2,10 @@ from battle_city.monsters.tank import Tank
 from battle_city.basic import Direction
 
 
-def make_tank(x=128, y=128):
+def make_tank(x=128, y=128, direction=None):
     tank = Tank(x, y)
+    if direction:
+        tank.direction = direction
     return tank
 
 
@@ -22,7 +24,7 @@ def test_speed_min():
 
 
 def test_snap_to_grid_after_direction_up():
-    tank = make_tank(x=24, y=24)  # grid tile is 16x16
+    tank = make_tank(x=24, y=24, direction=Direction.LEFT)  # grid tile is 16x16
     tank.set_direction(Direction.UP)
 
     assert tank.position.x == 32
@@ -30,7 +32,7 @@ def test_snap_to_grid_after_direction_up():
 
 
 def test_snap_to_grid_after_direction_down():
-    tank = make_tank(x=24, y=24)  # grid tile is 16x16
+    tank = make_tank(x=24, y=24, direction=Direction.LEFT)  # grid tile is 16x16
     tank.set_direction(Direction.DOWN)
 
     assert tank.position.x == 32
