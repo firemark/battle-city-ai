@@ -6,4 +6,4 @@ python:
 install:
     - pip install -e .[test]
 script:
-    - pytest tests/ --cov
+    - pytest tests/ --cov=battle_city
