@@ -16,6 +16,8 @@ Protocol is very easy - asynchronous, persistent connection on TCP/IP similar to
 
 Because this game is real time, server sends data about moving of tanks/bullets etc
 
+TODO: write about frequency and usage of informations
+
 ```javascript
 {"status": "data", "action": "change", "id": "HEX", …}\n
 ```

@@ -1,5 +1,6 @@
 # Unit messages
-On every tick in the server, server will be sent many messages about unit moving, spawning bullet/npc or destroying tank/bullet/wall.
+On every tick in the server, the server will send many messages about unit moves,
+spawning bullet/npc or destroying tank/bullet/wall.
 
 Type of message is field `status` with value `"data"`
 To determine action of object (destroy/move/change/spawn) you can use `action` field.
@@ -28,7 +29,7 @@ When unit is spawned or changed (direction, speed or sth) then server sends all 
     "speed": SPEED, // int
     "position": {"x": X, "y": Y},
     "direction": "up"|"down"|"left"|"right",
-    "is_freeze": true|false
+    "is_freeze": true|false // tank can be freezed max to 15 ticks of game.
 }
 ```
 

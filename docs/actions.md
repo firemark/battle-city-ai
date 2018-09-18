@@ -28,6 +28,9 @@ Need to set name of player and get map. Name of player must be 6 char length and
 ```
 
 ### Response
+Types and coordinations are descripted in [types.md](types.md)
+Size of map are 256×256.
+
 ```js
 {
     "status": "OK",
@@ -40,7 +43,6 @@ Need to set name of player and get map. Name of player must be 6 char length and
 }
 ```
 
-Types are descripted in types.md
 
 ### Possible Errors
 * `name is too long` 
@@ -67,12 +69,13 @@ Types are descripted in types.md
 ### Request
 ```js
 // available Direction is "left", "right", "up" or "down"
+// WARNING! every 90° roration snaps your tank to grid 16×16!
 {"action": "rotate", "direction": DIRECTION}
 ```
 
 ### Response
 ```js
-{"status": "OK", "direction": DIRECTION}
+{"status": "OK", "direction": DIRECTION, "position": {"x": X, "y": Y}}
 ```
 
 ## Shot
@@ -80,7 +83,7 @@ On the next tick will be created a new bullet with direction of tank
 
 ### Request
 ```js
-{"action": "shot"}
+{"action": "shoot"}
 ```
 
 ### Response
