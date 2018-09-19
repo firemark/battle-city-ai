@@ -3,6 +3,17 @@ from battle_city.game import Game
 from battle_city.action_handler import ActionHandler
 from battle_city.connection import PlayerConnection
 
+from argparse import ArgumentParser
+
+parser = ArgumentParser(description='Server of battle city')
+parser.add_argument(
+    '--ip', type=str, help='ip of server to listen', default='127.0.0.1')
+parser.add_argument(
+    '--port', type=int, help='port of server to listen', default=8888)
+parser.add_argument(
+    '--map', type=str, help='path to map', default='a')
+parser.add_argument('--hidden-window', action='store_true', default=False)
+
 
 async def game_loop(game: Game):
     while True:
@@ -42,12 +53,15 @@ async def handle_action(connection, data: dict, player, game):
 
 
 def run():
+    args = parser.parse_args()
+
     game = Game()
-    game.load_map('a')
-    game.set_drawer()
+    game.load_map(args.map)
+    if not args.hidden_window:
+        game.set_drawer()
     loop = get_event_loop()
     coro_server = start_server(
-        handle_connection(game), '0.0.0.0', 8888,
+        handle_connection(game), args.ip, args.port,
         loop=loop,
     )
 

@@ -1,15 +1,6 @@
 #!/bin/bash
 set -e
-
-CMD_A="python -m battle_city.client"
-CMD_B="python -m battle_city.client"
-while getopts a:b:h option; do
-    case $option in
-        a) CMD_A=$OPTARG;;
-        b) CMD_B=$OPTARG;;
-        h) echo "cat this file"; exit;;
-    esac
-done
+source _run_game.sh
 
 SESSION=${USER}_BATTLECITY
 
@@ -18,7 +9,7 @@ tmux -2 new-session -d -s $SESSION "/bin/sh"
 # top window - server
 tmux split-window -v "/bin/sh"
 tmux select-pane -t 0
-tmux send-keys "clear; python -m battle_city.server; read; tmux kill-session -t $SESSION" C-m
+tmux send-keys " clear; python -m battle_city.server --ip $IP --port $PORT --map $MAP $SERVER_OPTS; read; tmux kill-session -t $SESSION" C-m
 
 # player windows
 tmux select-pane -t 1 

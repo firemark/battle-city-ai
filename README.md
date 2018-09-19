@@ -89,13 +89,22 @@ Now:
 # scripts have a optional argument -a for player A and -b for player B
 # command would be a runner, example "python copied_client.py" - remember about command (python, nodejs, ruby or something else) to run your script!!
 # default command for -a and -b is "python -m battle_city.client"
-# ./run_game.sh [-a CMD_A] [-b CMD_B]
+./run_game.sh --help
+run_game.sh [OPTIONS...]
+    --help              print this text
+    --cmd-p1 CMD_P1     command to run client as player1. Default is "python -m battle_city.client"
+    --cmd-p2 CMD_P2     command to run client as player2. Default is "python -m battle_city.client"
+    --map MAP           select map to run game. Default is a
+    --ip IP             IP of server. Default is 127.0.0.1
+    --port PORT         PORT of server. Default is 8888
+    --hidden-window     don't show window with game, run only server
+
 
 # linux/mingw/osx/wsl
-./run_game.sh -a "python copied_client.py"
+./run_game.sh --cmd-p1 "python copied_client.py"
 # The color of your tank will be yellow.
-# tmux version - more hackerable!
-./run_game_tmux.sh -a "python copied_client.py"
+# tmux version - more hackerable (with split screens in terminal)!
+./run_game_tmux.sh --cmd-p1 "python copied_client.py"
 ```
 
 The `run_game.sh` script will run the whole game with two clients. There is no need to run anything else.

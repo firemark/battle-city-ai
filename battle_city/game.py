@@ -112,4 +112,5 @@ class Game(object):
         if self.is_ready() and not self.is_over():
             await self.logic.step()
             await self.send_informations()
-        self.drawer.render()
+        if self.drawer is not None:
+            self.drawer.render()
