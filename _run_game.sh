@@ -2,7 +2,7 @@ CMD_A='python -m battle_city.client'
 CMD_B='python -m battle_city.client'
 IP='127.0.0.1'
 PORT='8888'
-MAP='a'
+MAP='pilif'
 SERVER_OPTS=''
 
 function show_help() {

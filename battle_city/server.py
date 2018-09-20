@@ -11,7 +11,7 @@ parser.add_argument(
 parser.add_argument(
     '--port', type=int, help='port of server to listen', default=8888)
 parser.add_argument(
-    '--map', type=str, help='path to map', default='a')
+    '--map', type=str, help='path to map', default='pilif')
 parser.add_argument('--hidden-window', action='store_true', default=False)
 
 
