@@ -56,10 +56,10 @@ class ActionHandler(object):
                 return
             player.set_speed(speed)
             await cls.set_had_action(player, game)
-        await cls.write_ok(player, speed=speed)
+        await cls.write_ok(player, speed=player.speed)
 
     @classmethod
-    async def action_shot(cls, data: dict, player: Player, game: Game):
+    async def action_shoot(cls, data: dict, player: Player, game: Game):
         with await game.step_lock:
             if not await cls.can_has_action(game, player):
                 return

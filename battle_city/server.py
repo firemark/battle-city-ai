@@ -42,10 +42,10 @@ async def handle_actions(connection, player, game):
             data = await connection.read()
         except ConnectionError:
             return
-        await handle_action(connection, data, player, game)
+        await handle_action(data, player, game)
        
 
-async def handle_action(connection, data: dict, player, game):
+async def handle_action(data: dict, player, game):
     action = 'action_' + data.get('action', 'undefined')
     action_undefined = ActionHandler.action_undefined
     method = getattr(ActionHandler, action, action_undefined)

@@ -32,7 +32,7 @@ class Game(object):
             direction = choice(['up', 'down', 'left', 'right'])
             data = dict(action='rotate', direction=direction)
         else:
-            data = dict(action='shot')
+            data = dict(action='shoot')
 
         await self.send(data)
 

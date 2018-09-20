@@ -1,4 +1,4 @@
-from battle_city.action_handler import ActionHandler
+from battle_city.server import handle_action
 from .utils import make_game, make_player, patch_messages
 from asynctest.mock import patch
 import pytest
@@ -13,7 +13,7 @@ async def test_action_greet_ok(messages):
     game = make_game(player)
     messages.get_world_data.return_value = {'action': 'foobar'}
 
-    await ActionHandler.action_greet({'name': 'socek'}, player, game)
+    await handle_action({'action': 'greet', 'name': 'socek'}, player, game)
 
     messages.get_world_data.assert_called_once_with(player, game)
     player.connection.write.assert_called_once_with({
@@ -30,7 +30,7 @@ async def test_action_greet_with_blank_name():
     player = make_player()
     game = make_game(player)
 
-    await ActionHandler.action_greet({'name': ''}, player, game)
+    await handle_action({'action': 'greet', 'name': ''}, player, game)
 
     player.connection.write.assert_called_once_with({
         'status': 'ERROR',
@@ -43,7 +43,7 @@ async def test_action_greet_with_undefined_name():
     player = make_player()
     game = make_game(player)
 
-    await ActionHandler.action_greet({}, player, game)
+    await handle_action({'action': 'greet'}, player, game)
 
     player.connection.write.assert_called_once_with({
         'status': 'ERROR',
@@ -56,7 +56,7 @@ async def test_action_greet_with_wrong_type_name():
     player = make_player()
     game = make_game(player)
 
-    await ActionHandler.action_greet({'name': 123}, player, game)
+    await handle_action({'action': 'greet', 'name': 123}, player, game)
 
     player.connection.write.assert_called_once_with({
         'status': 'ERROR',
@@ -69,7 +69,7 @@ async def test_action_greet_with_too_long_name():
     player = make_player()
     game = make_game(player)
 
-    await ActionHandler.action_greet({'name': 'a' * 50}, player, game)
+    await handle_action({'action': 'greet', 'name': 'a' * 123}, player, game)
 
     player.connection.write.assert_called_once_with({
         'status': 'ERROR',
@@ -83,7 +83,7 @@ async def test_action_greet_again():
     player.ready = True
     game = make_game(player)
 
-    await ActionHandler.action_greet({'name': 'a'}, player, game)
+    await handle_action({'action': 'greet', 'name': 'a'}, player, game)
 
     player.connection.write.assert_called_once_with({
         'status': 'ERROR',

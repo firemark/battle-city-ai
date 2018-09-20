@@ -1,3 +1,4 @@
+htmlcov
 .pytest_cache
 .idea
 venv/
