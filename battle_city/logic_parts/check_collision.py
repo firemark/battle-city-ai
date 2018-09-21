@@ -8,11 +8,33 @@ from battle_city import messages
 class CheckCollisionsLogicPart(LogicPart):
 
     async def do_it(self):
+        await self.check_bullets_with_player()
+        await self.check_bullets_with_npc()
+        await self.check_bullets_yourself()
+        await self.check_bullets_with_walls()
+        await self.check_tank_yourself()
+
+    async def check_tank_yourself(self):
+        game = self.game
+
+        tanks = list(game.get_tanks_chain())
+        for tank_a, tank_b in self.check_collision(tanks, tanks):
+            if tank_a is tank_b:
+                continue
+
+            # we need to check who was in this field first
+            if not tank_a.check_collision_with_old_position(tank_b):
+                self.move_monster_with_static_obj(tank_a, tank_b)
+            else:
+                self.move_monster_with_static_obj(tank_b, tank_a)
+
+        self.check_tank_collisions(game.alive_players)
+        self.check_tank_collisions(game.npcs)
+
+    async def check_bullets_with_player(self):
         game = self.game
         players = game.alive_players
-        npcs = game.npcs
         bullets = game.bullets
-        walls = game.walls
 
         for player, bullet in self.check_collision(players, bullets):
             await self.remove_from_group(bullet, bullets)
@@ -23,11 +45,20 @@ class CheckCollisionsLogicPart(LogicPart):
                 player.set_game_over()
                 await self.remove_from_group(player, self.game.alive_players)
 
+    async def check_bullets_with_npc(self):
+        game = self.game
+        npcs = game.npcs
+        bullets = game.bullets
+
         for npc, bullet in self.check_collision(npcs, bullets):
             await self.remove_from_group(bullet, bullets)
             if bullet.parent_type == 'player':
                 bullet.parent.score += 200
                 await self.remove_from_group(npc, npcs)
+
+    async def check_bullets_yourself(self):
+        game = self.game
+        bullets = game.bullets
 
         for bullet in bullets:
             if not self.is_monster_in_area(bullet):
@@ -39,6 +70,11 @@ class CheckCollisionsLogicPart(LogicPart):
 
             await self.remove_from_group(bullet_a, bullets)
             await self.remove_from_group(bullet_b, bullets)
+
+    async def check_bullets_with_walls(self):
+        game = self.game
+        bullets = game.bullets
+        walls = game.walls
 
         for bullet, wall in self.check_collision(bullets, walls):
             is_destroyed, is_touched = wall.hurt(bullet.direction)
@@ -57,20 +93,6 @@ class CheckCollisionsLogicPart(LogicPart):
 
                     if bullet.parent_type == 'player':
                         bullet.parent.score += 1
-
-        tanks = list(self.game.get_tanks_chain())
-        for tank_a, tank_b in self.check_collision(tanks, tanks):
-            if tank_a is tank_b:
-                continue
-
-            # we need to check who was in this field first
-            if not tank_a.check_collision_with_old_position(tank_b):
-                self.move_monster_with_static_obj(tank_a, tank_b)
-            else:
-                self.move_monster_with_static_obj(tank_b, tank_a)
-
-        self.check_tank_collisions(players)
-        self.check_tank_collisions(npcs)
 
     async def freeze(self, player: Player):
         player.set_freeze()
