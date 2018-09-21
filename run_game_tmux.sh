@@ -9,7 +9,7 @@ tmux -2 new-session -d -s $SESSION "/bin/sh"
 # top window - server
 tmux split-window -v "/bin/sh"
 tmux select-pane -t 0
-tmux send-keys " clear; python -m battle_city.server --ip $IP --port $PORT --map $MAP $SERVER_OPTS; read; tmux kill-session -t $SESSION" C-m
+tmux send-keys "clear; python -m battle_city.server --ip $IP --port $PORT --map $MAP --speed $SPEED $SERVER_OPTS; read; tmux kill-session -t $SESSION" C-m
 
 # player windows
 tmux select-pane -t 1 

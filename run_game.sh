@@ -2,14 +2,14 @@
 set -e
 trap finish INT
 
-function finish() {
+finish() {
     kill -9 $P1 $P2 $P3
 }
 
 source _run_game.sh
 echo "^C to cancel..."
 
-python -m battle_city.server --ip $IP --port $PORT --map $MAP $SERVER_OPTS&
+python -m battle_city.server --ip $IP --port $PORT --map $MAP --speed $SPEED $SERVER_OPTS&
 P1=$!
 sleep 2
 $CMD_A > /dev/null&

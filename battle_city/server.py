@@ -13,13 +13,14 @@ parser.add_argument(
 parser.add_argument(
     '--map', type=str, help='path to map', default='pilif')
 parser.add_argument('--hidden-window', action='store_true', default=False)
+parser.add_argument('--speed', type=float, default=1, help='tick speed in milliseconds')
 
 
-async def game_loop(game: Game):
+async def game_loop(game: Game, speed: float=0.033):
     while True:
         await wait([
             game.step(),
-            sleep(0.033),
+            sleep(speed),
         ])
 
 
@@ -42,6 +43,8 @@ async def handle_actions(connection, player, game):
             data = await connection.read()
         except ConnectionError:
             return
+        if data is None:
+            continue
         await handle_action(data, player, game)
        
 
@@ -66,7 +69,7 @@ def run():
     )
 
     server = loop.run_until_complete(coro_server)
-    loop.run_until_complete(game_loop(game))
+    loop.run_until_complete(game_loop(game, 33 / args.speed / 1000))
 
     try:
         loop.run_forever()
