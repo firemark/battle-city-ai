@@ -44,7 +44,7 @@ async def handle_actions(connection, player, game):
         except ConnectionError:
             return
         if data is None:
-            continue
+            return
         await handle_action(data, player, game)
        
 
