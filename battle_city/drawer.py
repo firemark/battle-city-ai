@@ -18,7 +18,7 @@ IMAGES_DIR = path.join(DIR, '..', 'images')
 
 
 def _load_pack(name):
-    pathfile = path.join(IMAGES_DIR, f'{name}.png')
+    pathfile = path.join(IMAGES_DIR, '%s.png' % name)
     image = img_load(pathfile)
 
     return {
@@ -30,7 +30,7 @@ def _load_pack(name):
 
 
 def _load_simple(name):
-    pathfile = path.join(IMAGES_DIR, f'{name}.png')
+    pathfile = path.join(IMAGES_DIR, '%s.png' % name)
     return img_load(pathfile)
 
 
@@ -52,7 +52,7 @@ WALLS = {
 
 class Drawer(object):
     game = None  # type: game.Game
-    time: int = 0
+    time = 0 # type: int
 
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 600
@@ -141,18 +141,21 @@ class Drawer(object):
             self.screen.blit(image, cords, area)
 
     def _render_text(self):
+        npcs_left = self.game.npcs_left
+        npcs_in_area = len(self.game.npcs)
+        time_left = self.game.time_left
         self._render_label('BATTLE CITY AI', (0, 0))
-        self._render_label(f'NPCs left:    {self.game.npcs_left:03d}', (0, 40))
-        self._render_label(f'NPCs in area: {len(self.game.npcs):03d}', (0, 80))
-        self._render_label(f'Time left:    {self.game.time_left:03d}', (0, 120))
+        self._render_label('NPCs left:    {:03d}'.format(npcs_left), (0, 40))
+        self._render_label('NPCs in area: {:03d}'.format(npcs_in_area), (0, 80))
+        self._render_label('Time left:    {:03d}'.format(time_left), (0, 120))
 
         if not self.game.is_ready():
-            self._render_label(f'NOT READY', (0, 180))
+            self._render_label('NOT READY', (0, 180))
         elif self.game.is_over():
-            self._render_label(f'GAME OVER', (0, 180), color=(255, 0, 0))
+            self._render_label('GAME OVER', (0, 180), color=(255, 0, 0))
 
         for num, player in enumerate(self.game.players, start=1):
-            name_label = player.nick or f'P{player.player_id}'
+            name_label = player.nick or 'P%s' % player.player_id
             if player.is_game_over and self.time > 50:
                 info_label = 'KILLED'
             elif not player.connection:
@@ -161,7 +164,7 @@ class Drawer(object):
                 info_label = 'FREEZE'
             else:
                 info_label = ''
-            label = f'{name_label:10} {player.score:06d}'
+            label = '{:10} {:06d}'.format(name_label, player.score)
             color = self.PLAYER_COLORS[player.player_id]
             self._render_label(label, (0, 200 + 40 * num), color)
             self._render_label(info_label, (0, 220 + 40 * num), color)

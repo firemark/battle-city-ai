@@ -4,9 +4,9 @@ import json
 
 
 class PlayerConnection(object):
-    writer: StreamWriter
-    reader: StreamReader
-    buffer: bytes = b''
+    writer = None  # type: StreamWriter
+    reader = None  # type: StreamReader
+    buffer = b''
 
     def __init__(self, reader: StreamReader, writer: StreamWriter):
         self.writer = writer

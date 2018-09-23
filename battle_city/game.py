@@ -11,17 +11,17 @@ from itertools import chain
 
 
 class Game(object):
-    players: List[Player]
-    npcs: List[NPC]
-    bullets: List[Bullet]
-    walls: List[Wall]
-    player_spawns: Dict[str, Spawner]
-    npc_spawns: List[Spawner]
-    logic: GameLogic
-    drawer: Drawer
-    ready: bool = False
-    step_lock: Lock
-    npcs_left: int
+    players = None  # type: List[Player]
+    npcs = None  # type:  List[NPC]
+    bullets = None # type: List[Bullet]
+    walls = None  # type: List[Wall]
+    player_spawns = None  # type: Dict[str, Spawner]
+    npc_spawns = None  # type: List[Spawner]
+    logic = None  # type: GameLogic
+    drawer = None  # type: Drawer
+    ready = False  # type: False
+    step_lock = None  # type: Lock
+    npcs_left = 0  # type: int
 
     WIDTH = 512
     HEIGHT = 512

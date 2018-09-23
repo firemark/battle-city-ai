@@ -111,7 +111,11 @@ class Draw:
         for obj in game.map.values():
             pygame.draw.rect(self.window, obj['color'], obj['rect'])
 
-        label = f'NPC: {game.npc:03d} TIME: {game.time:03d}'
+
+        label = 'NPC: {:03d} TIME: {:03d}'.format(
+            game.npc,
+            game.time,
+        )
         image = self.font.render(label, 1, (0xff, 0xff, 0xff))
         self.window.blit(image, (0, 512))
         pygame.display.update()

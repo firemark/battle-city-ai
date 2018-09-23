@@ -34,14 +34,14 @@ class MapMaker(object):
 
     @staticmethod
     def load_data_from_name(name):
-        filepath = path.join(MAPS_DIR, f'{name}.map')
+        filepath = path.join(MAPS_DIR, '%s.map' % name)
         with open(filepath) as fp:
             lines = fp.readlines()[:16]
         return [line[:16].ljust(16, '.') for line in lines]
 
     def make(self):
         methods = {
-            char: getattr(self, f'make_{name}', self.make_unknown)
+            char: getattr(self, 'make_%s' % name, self.make_unknown)
             for char, name in self.CHAR_TO_METHOD.items()
         }
 

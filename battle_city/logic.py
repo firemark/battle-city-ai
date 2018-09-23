@@ -9,7 +9,7 @@ from battle_city.logic_parts.tick import TickLogicPart
 
 class GameLogic(object):
     game = None  # type: battle_city.game.Game
-    parts: List[LogicPart]
+    parts = None  # type: List[LogicPart]
 
     def __init__(self, game):
         self.game = game

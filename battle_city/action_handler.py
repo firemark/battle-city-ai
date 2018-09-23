@@ -30,7 +30,7 @@ class ActionHandler(object):
 
     @classmethod
     async def action_rotate(cls, data: dict, player: Player, game: Game):
-        raw_direction: str = data.get('direction', '').lower()
+        raw_direction = data.get('direction', '').lower()
         try:
             direction = Direction(raw_direction)
         except ValueError:

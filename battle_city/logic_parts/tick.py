@@ -9,7 +9,7 @@ from random import random, choice
 
 
 class TickLogicPart(LogicPart):
-    ticks: int = 0
+    ticks = 0
 
     async def do_it(self):
         self.ticks += 1
