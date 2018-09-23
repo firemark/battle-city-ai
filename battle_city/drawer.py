@@ -1,16 +1,14 @@
 from battle_city.basic import Direction
 from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
-from pygame.font import SysFont
 from pygame.image import load as img_load
-from pygame.display import set_mode, flip, set_caption
 from pygame.transform import rotate
-from pygame.draw import rect as draw_rect
-from pygame import init as pygame_init
 
 from os import path
 
 import pygame
+import pygame.display
+import pygame.draw
 
 
 DIR = path.abspath(path.dirname(__file__))
@@ -34,22 +32,6 @@ def _load_simple(name):
     return img_load(pathfile)
 
 
-IMG_PLAYER_11 = _load_pack('player_11')
-IMG_PLAYER_21 = _load_pack('player_21')
-IMG_NPC_1 = _load_pack('npc_1')
-IMG_PLAYER_12 = _load_pack('player_12')
-IMG_PLAYER_22 = _load_pack('player_22')
-IMG_NPC_2 = _load_pack('npc_2')
-BULLET = _load_pack('bullet')
-FREEZE = _load_simple('freeze')
-
-WALLS = {
-    TinyWall: _load_simple('wall'),
-    Metal: _load_simple('metal'),
-    Water: _load_simple('water'),
-}
-
-
 class Drawer(object):
     game = None  # type: game.Game
     time = 0 # type: int
@@ -67,12 +49,30 @@ class Drawer(object):
         (0, 255, 0),
     ]
 
+    IMAGES = dict(
+        IMG_PLAYER_1_1=_load_pack('player_11'),
+        IMG_PLAYER_2_1=_load_pack('player_21'),
+        IMG_NPC_1=_load_pack('npc_1'),
+        IMG_NPC_2=_load_pack('npc_2'),
+        IMG_PLAYER_1_2=_load_pack('player_12'),
+        IMG_PLAYER_2_2=_load_pack('player_22'),
+        BULLET=_load_pack('bullet'),
+        FREEZE=_load_simple('freeze'),
+    )
+
+    WALLS = {
+        TinyWall: _load_simple('wall'),
+        Metal: _load_simple('metal'),
+        Water: _load_simple('water'),
+    }
+
     def __init__(self, game):
-        pygame_init()
-        set_caption('BATTLE CITY AI')
+        pygame.init()
+        pygame.display.set_caption('BATTLE CITY AI')
         self.time = 0
-        self.screen = set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
-        self.font = SysFont('monospace', self.FONT_SIZE, bold=True)
+        self.screen = pygame.display.set_mode(
+            (self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
+        self.font = pygame.font.SysFont('monospace', self.FONT_SIZE, bold=True)
         self.game = game
 
     def render(self):
@@ -88,7 +88,7 @@ class Drawer(object):
         self._render_npcs()
         self._render_walls()
         self._render_text()
-        flip()
+        pygame.display.flip()
 
     def _support_pygame_events(self):
         events = pygame.event.get()
@@ -102,33 +102,34 @@ class Drawer(object):
         self.screen.fill((0x5f, 0x57, 0x4f))
         offset = self.OFFSET
         rect_size = (offset, offset, self.game.WIDTH, self.game.HEIGHT)
-        draw_rect(self.screen, (0, 0, 0), rect_size)
+        pygame.draw.rect(self.screen, (0, 0, 0), rect_size)
 
     def _render_players(self):
         players = self.game.alive_players
         for player in players:
             if player.player_id == 0:
-                image = self._get_frame(player, IMG_PLAYER_11, IMG_PLAYER_12)
+                image_pack = self._get_frame(player, 'IMG_PLAYER_1')
             else:
-                image = self._get_frame(player, IMG_PLAYER_21, IMG_PLAYER_22)
+                image_pack = self._get_frame(player, 'IMG_PLAYER_2')
 
-            self._blit(image, player)
-            if player.is_freeze and self.time % 30 > 15:
-                self._blit_simple(FREEZE, player)
+            self._blit(image_pack, player)
+            if player.is_freeze and self.time % 30 < 15:
+                self._blit('FREEZE', player)
 
     def _render_npcs(self):
         npcs = self.game.npcs
         for npc in npcs:
-            image = self._get_frame(npc, IMG_NPC_1, IMG_NPC_2)
+            image = self._get_frame(npc, 'IMG_NPC')
             self._blit(image, npc)
 
-    def _get_frame(self, obj, img1, img2):
-        prediction = self.time * obj.speed * 0.8 % 2 > 1
-        return img1 if prediction else img2
+    def _get_frame(self, obj, img: str):
+        prediction = self.time * obj.speed * 0.8 % 2 < 1
+        image_pack = '{}_{}'.format(img, 1 if prediction else 2)
+        return image_pack
 
     def _render_bullets(self):
         for bullet in self.game.bullets:
-            self._blit(BULLET, bullet)
+            self._blit('BULLET', bullet)
 
     def _render_walls(self):
         for wall in self.game.walls: 
@@ -137,7 +138,7 @@ class Drawer(object):
             xx = position.x % Wall.SIZE
             yy = position.y % Wall.SIZE
             area = (xx, yy, position.width, position.height)
-            image = WALLS[type(wall)]
+            image = self.WALLS[type(wall)]
             self.screen.blit(image, cords, area)
 
     def _render_text(self):
@@ -156,30 +157,36 @@ class Drawer(object):
 
         for num, player in enumerate(self.game.players, start=1):
             name_label = player.nick or 'P%s' % player.player_id
-            if player.is_game_over and self.time > 50:
-                info_label = 'KILLED'
-            elif not player.connection:
-                info_label = 'WAIT'
-            elif player.is_freeze:
-                info_label = 'FREEZE'
-            else:
-                info_label = ''
+            info_label = self._get_info_label(player)
             label = '{:10} {:06d}'.format(name_label, player.score)
             color = self.PLAYER_COLORS[player.player_id]
             self._render_label(label, (0, 200 + 40 * num), color)
             self._render_label(info_label, (0, 220 + 40 * num), color)
+
+    def _get_info_label(self, player):
+        if player.is_game_over and self.time < 50:
+            return 'KILLED'
+        elif not player.connection:
+            return 'WAIT'
+        elif player.is_freeze:
+            return 'FREEZE'
+        else:
+            return ''
 
     def _render_label(self, label: str, cords, color=(0xff, 0xf1, 0xe8)):
         image = self.font.render(label, 1, color)
         new_cords = (self.OFFSET_LABELS_X + cords[0], self.OFFSET_LABELS_Y + cords[1])
         self.screen.blit(image, new_cords)
 
-    def _blit_simple(self, image, monster):
+    def _blit(self, image_name, monster):
+        image_pack = self.IMAGES[image_name]
+
+        if isinstance(image_pack, dict):
+            image = image_pack[monster.direction]
+        else:
+            image = image_pack
+
         position = monster.position
         cords = (self.OFFSET + position.x, self.OFFSET + position.y)
         self.screen.blit(image, cords)
-
-    def _blit(self, image_pack, monster):
-        image = image_pack[monster.direction]
-        self._blit_simple(image, monster)
 
