@@ -2,14 +2,13 @@ from battle_city.monsters.tank import Tank
 
 
 class Player(Tank):
-    player_id: int
-    score: int = 0
-    ready: bool = False
+    player_id = 0
+    score = 0
+    ready = False
     connection = None
-    is_game_over: bool = False
-    nick: str = None
-
-    had_action: bool = False
+    is_game_over = False
+    nick = None  # type: str
+    had_action = False
     
     def __init__(self, player_id, x, y):
         super().__init__(x, y)

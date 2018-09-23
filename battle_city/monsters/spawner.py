@@ -1,6 +1,4 @@
-from typing import NamedTuple
+from collections import namedtuple
 
 
-class Spawner(NamedTuple):
-    x: int
-    y: int
+Spawner = namedtuple('Spawner', ['x', 'y'])

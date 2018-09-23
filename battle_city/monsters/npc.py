@@ -5,8 +5,8 @@ from random import random, randint, choice
 
 
 class NPC(Tank):
-    direction: Direction = Direction.DOWN
-    speed: int = 2
+    direction  = Direction.DOWN
+    speed = 2
 
     def do_something(self) -> bool:
         if random() > 0.4:

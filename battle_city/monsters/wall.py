@@ -5,8 +5,8 @@ from pygame import Rect
 
 
 class Wall(object):
-    id: UUID
-    position: Rect
+    id = None  # type: UUID
+    position = None  # type: Rect
     SIZE = 32
 
     def __init__(self, x: int, y: int):

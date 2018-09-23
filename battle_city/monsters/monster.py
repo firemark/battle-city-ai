@@ -6,12 +6,12 @@ from typing import List
 
 
 class Monster(object):
-    id: UUID
-    direction: Direction = Direction.UP
-    speed: int = 0
-    is_freeze: bool = False
-    position: Rect
-    old_position: Rect
+    id = None  # type: UUID
+    direction = Direction.UP
+    speed = 0
+    is_freeze = False
+    position = None  # type: Rect
+    old_position = None  # type: Rect
 
     SIZE = 8 
 

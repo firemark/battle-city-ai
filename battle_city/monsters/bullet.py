@@ -7,10 +7,10 @@ from uuid import UUID
 
 
 class Bullet(Monster):
-    speed: int = 8
-    parent_type: str = None
-    parent_id: UUID = None
-    parent: Monster
+    speed = 8
+    parent_type = None
+    parent_id = None
+    parent = None  #type : Monster
     SIZE = 4
 
     def set_parent(self, parent: Monster):

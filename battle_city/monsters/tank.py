@@ -5,7 +5,7 @@ from battle_city.basic import Direction
 class Tank(Monster):
     HOR_DIRECTIONS = {Direction.LEFT, Direction.RIGHT}
     VER_DIRECTIONS = {Direction.UP, Direction.DOWN}
-    is_shot: bool = False
+    is_shot = False
     SIZE = 32
 
     def set_speed(self, speed: int):
