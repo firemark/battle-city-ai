@@ -56,6 +56,7 @@ class Game(object):
 
     def set_drawer(self):
         self.drawer = Drawer(self)
+        self.drawer.bake_static_background()
 
     def set_next_player(self, connection):
         self.connections.append(connection)

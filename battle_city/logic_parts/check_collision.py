@@ -1,3 +1,5 @@
+from asyncio import get_event_loop
+
 from battle_city.logic_parts.base import LogicPart
 from battle_city.monsters.monster import Monster
 from battle_city.monsters.player import Player
@@ -83,13 +85,15 @@ class CheckCollisionsLogicPart(LogicPart):
                 await self.remove_from_group(bullet, bullets)
 
             if is_destroyed:
-
                 walls_to_destroy = bullet.check_collision_with_group(
                     group=walls,
                     rect=bullet.get_long_collision_rect(),
                 )
                 for wall_to_destroy in walls_to_destroy:
                     await self.remove_from_group(wall_to_destroy, walls)
+                    if self.game.drawer:
+                        loop = get_event_loop()
+                        loop.call_soon(self.game.drawer.bake_static_background)
 
                     if bullet.parent_type == 'player':
                         bullet.parent.score += 1

@@ -1,5 +1,7 @@
 from unittest.mock import patch, Mock, call
 
+from pygame import Surface
+
 from battle_city.drawer import Drawer
 from battle_city.game import Game
 from battle_city.monsters import Player, NPC, Bullet
@@ -23,7 +25,6 @@ def test_render(pygame):
         call._render_players(),
         call._render_bullets(),
         call._render_npcs(),
-        call._render_walls(),
         call._render_text(),
     ]
 
@@ -44,14 +45,30 @@ def test_render_reset_time(pygame):
 def test_render_background(pygame):
     game = Game()
     drawer = Drawer(game)
+    drawer.background = Mock(spec=Surface)
 
     drawer._render_background()
 
-    drawer.screen.fill.assert_called_once_with((0x5f, 0x57, 0x4f))
-    pygame.draw.rect.assert_called_once_with(drawer.screen, (0, 0, 0), (
-        drawer.OFFSET, drawer.OFFSET,
-        drawer.game.WIDTH, drawer.game.HEIGHT,
-    ))
+    drawer.screen.blit.assert_called_once_with(drawer.background, (0, 0))
+
+
+@patch_pygame
+def test_render_solid_color(pygame):
+    game = Game()
+    surface = Mock(spec=Surface)
+    drawer = Drawer(game)
+
+    drawer._render_solid_colors(surface)
+
+    surface.fill.assert_called_once_with((0x5f, 0x57, 0x4f))
+    pygame.draw.rect.assert_called_once_with(
+        surface,
+        (0, 0, 0),
+        (
+            drawer.OFFSET, drawer.OFFSET,
+            drawer.game.WIDTH, drawer.game.HEIGHT,
+        )
+    )
 
 
 @patch_pygame
@@ -134,6 +151,7 @@ def test_render_walls(pygame):
         Metal(64, 48),
         Water(96, 32),
     ]
+    surface = Mock(spec=Surface)
     drawer = Drawer(game)
     os = Drawer.OFFSET
     drawer.WALLS = {  # pygame surface can't use eq operator ;_;
@@ -142,9 +160,9 @@ def test_render_walls(pygame):
         Water: 'water',
     }
 
-    drawer._render_walls()
+    drawer._render_walls(surface)
 
-    assert drawer.screen.blit.call_args_list == [
+    assert surface.blit.call_args_list == [
         call('tiny_wall', (os + 48, os + 32), (16, 0, 8, 8)),
         call('metal', (os + 64, os + 48), (0, 16, 32, 32)),
         call('water', (os + 96, os + 32), (0, 0, 32, 32)),

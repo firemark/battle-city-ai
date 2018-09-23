@@ -3,6 +3,7 @@ from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
 from pygame.image import load as img_load
 from pygame.transform import rotate
+from pygame import Surface
 
 from os import path
 
@@ -70,6 +71,7 @@ class Drawer(object):
         pygame.init()
         pygame.display.set_caption('BATTLE CITY AI')
         self.time = 0
+        self.background = Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.screen = pygame.display.set_mode(
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
         self.font = pygame.font.SysFont('monospace', self.FONT_SIZE, bold=True)
@@ -86,7 +88,6 @@ class Drawer(object):
         self._render_players()
         self._render_bullets()
         self._render_npcs()
-        self._render_walls()
         self._render_text()
         pygame.display.flip()
 
@@ -99,10 +100,19 @@ class Drawer(object):
                     exit(0)
 
     def _render_background(self):
-        self.screen.fill((0x5f, 0x57, 0x4f))
+        self.screen.blit(self.background, (0, 0))
+
+    def bake_static_background(self):
+        surface = Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        self._render_solid_colors(surface)
+        self._render_walls(surface)
+        self.background = surface
+
+    def _render_solid_colors(self, surface: Surface):
+        surface.fill((0x5f, 0x57, 0x4f))
         offset = self.OFFSET
         rect_size = (offset, offset, self.game.WIDTH, self.game.HEIGHT)
-        pygame.draw.rect(self.screen, (0, 0, 0), rect_size)
+        pygame.draw.rect(surface, (0, 0, 0), rect_size)
 
     def _render_players(self):
         players = self.game.alive_players
@@ -131,7 +141,7 @@ class Drawer(object):
         for bullet in self.game.bullets:
             self._blit('BULLET', bullet)
 
-    def _render_walls(self):
+    def _render_walls(self, surface):
         for wall in self.game.walls: 
             position = wall.position
             cords = (self.OFFSET + position.x, self.OFFSET + position.y)
@@ -139,7 +149,7 @@ class Drawer(object):
             yy = position.y % Wall.SIZE
             area = (xx, yy, position.width, position.height)
             image = self.WALLS[type(wall)]
-            self.screen.blit(image, cords, area)
+            surface.blit(image, cords, area)
 
     def _render_text(self):
         npcs_left = self.game.npcs_left
