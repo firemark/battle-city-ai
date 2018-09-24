@@ -14,6 +14,7 @@ P1=$!
 sleep 2
 $CMD_A > /dev/null&
 P2=$!
+sleep 0.25
 $CMD_B > /dev/null&
 P3=$!
 
