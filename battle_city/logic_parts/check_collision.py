@@ -6,6 +6,8 @@ from battle_city.monsters.player import Player
 
 from battle_city import messages
 
+from math import ceil, floor
+
 
 class CheckCollisionsLogicPart(LogicPart):
 
@@ -15,6 +17,7 @@ class CheckCollisionsLogicPart(LogicPart):
         await self.check_bullets_yourself()
         await self.check_bullets_with_walls()
         await self.check_tank_yourself()
+        await self.check_tank_collisions_with_walls()
 
     async def check_tank_yourself(self):
         game = self.game
@@ -25,13 +28,30 @@ class CheckCollisionsLogicPart(LogicPart):
                 continue
 
             # we need to check who was in this field first
-            if not tank_a.check_collision_with_old_position(tank_b):
+            old_col_a = tank_b.check_collision_with_old_position(tank_a)
+            old_col_b = tank_a.check_collision_with_old_position(tank_b)
+
+            if old_col_a and old_col_b:
+                self._move_monster_with_monster(tank_a, tank_b, 0)
+                self._move_monster_with_monster(tank_a, tank_b, 1)
+            elif old_col_a:
                 self.move_monster_with_static_obj(tank_a, tank_b)
-            else:
+            elif old_col_b:
                 self.move_monster_with_static_obj(tank_b, tank_a)
 
-        self.check_tank_collisions(game.alive_players)
-        self.check_tank_collisions(game.npcs)
+    def _move_monster_with_monster(self, monster_a, monster_b, axis):
+        pos_a = monster_a.position[axis]
+        pos_b = monster_b.position[axis]
+        diff = pos_a - pos_b
+
+        if diff > 0:
+            diff -= monster_b.position[axis + 2]
+        elif diff < 0:
+            diff += monster_a.position[axis + 2]
+        half_diff = diff / 2
+
+        monster_a.position[axis] -= floor(half_diff)
+        monster_b.position[axis] += ceil(half_diff)
 
     async def check_bullets_with_player(self):
         game = self.game
@@ -114,9 +134,9 @@ class CheckCollisionsLogicPart(LogicPart):
             position.top >= 0 and position.bottom <= height
         )
 
-    def check_tank_collisions(self, monsters):
+    async def check_tank_collisions_with_walls(self):
         walls = self.game.walls
-        for monster in monsters:
+        for monster in self.game.get_tanks_chain():
             # small probability to infinity loop - we need to cancel on 5th try
             for i in range(5):
                 # check_collision is very greedy - in future we need quadtree structure
@@ -126,7 +146,7 @@ class CheckCollisionsLogicPart(LogicPart):
                 wall = collision_walls[0]
                 self.move_monster_with_static_obj(monster, wall)
 
-        for monster in monsters:
+        for monster in self.game.get_tanks_chain():
             if monster.position.left < 0:
                 monster.position.x = 0
             elif monster.position.right > self.game.WIDTH:
@@ -141,12 +161,6 @@ class CheckCollisionsLogicPart(LogicPart):
     def move_monster_with_static_obj(cls, monster, other):
         cls.move_monster_with_static_obj_axis(monster, other, axis=0)
         cls.move_monster_with_static_obj_axis(monster, other, axis=1)
-
-    @classmethod
-    def move_monster_with_monster(cls, monster, other):
-        # probably will be removed in future
-        cls.move_monster_with_monster_axis(monster, other, axis=0)
-        cls.move_monster_with_monster_axis(monster, other, axis=1)
 
     @staticmethod
     def get_border_diff(pos_a, pos_b, axis: int) -> int:
@@ -170,41 +184,6 @@ class CheckCollisionsLogicPart(LogicPart):
             monster_pos[axis] += cls.get_border_diff(other_pos, monster_pos, axis)
         elif diff < 0:
             monster_pos[axis] -= cls.get_border_diff(monster_pos, other_pos, axis)
-
-    @classmethod
-    def move_monster_with_monster_axis(
-            cls, monster: Monster, other: Monster, axis: int):
-        monster_pos = monster.position
-        other_pos = other.position
-
-        # we need to detect direction of move using diff
-        diff_mon = monster.position[axis] - monster.old_position[axis]
-        diff_oth = other.position[axis] - other.old_position[axis]
-
-        if diff_mon == 0:
-            return cls.move_monster_with_static_obj_axis(other, monster, axis)
-        elif diff_oth == 0:
-            return cls.move_monster_with_static_obj_axis(monster, other, axis)
-
-        sign_mon = diff_mon > 0
-        sign_oth = diff_oth > 0
-
-        if sign_mon != sign_oth:
-            if sign_mon:
-                delta = cls.get_border_diff(other_pos, monster_pos, axis)
-                half_delta = delta // 2  # remember about round integers
-                monster_pos[axis] += half_delta
-                other_pos[axis] -= delta - half_delta
-            else:
-                delta = cls.get_border_diff(monster_pos, other_pos, axis)
-                half_delta = delta // 2  # remember about round integers
-                monster_pos[axis] -= half_delta
-                other_pos[axis] += delta - half_delta
-        else:
-            if diff_mon > diff_oth:
-                monster_pos[axis] -= diff_mon - diff_oth
-            else:
-                other_pos[axis] -= diff_oth - diff_mon
 
     async def remove_from_group(self, monster, group):
         try:
