@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+
+CMD_A='python -m battle_city.client'
+CMD_B='python -m battle_city.client'
 source _run_game.sh
 
 SESSION=${USER}_BATTLECITY

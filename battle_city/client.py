@@ -2,6 +2,12 @@ from asyncio import get_event_loop, open_connection, ensure_future
 from random import randint, choice
 
 import json
+import sys
+
+try:
+    is_silent = sys.argv[1] == 'silent'
+except IndexError:
+    is_silent = False
 
 
 class Game(object):
@@ -44,6 +50,9 @@ class Game(object):
         get json from server and do something
         for example show on console data
         """
+        if is_silent:  # don't show anything
+            return
+
         if data.get('action') == 'move':
             return  # too many data ;_;
 
