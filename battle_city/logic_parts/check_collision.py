@@ -111,12 +111,12 @@ class CheckCollisionsLogicPart(LogicPart):
                 )
                 for wall_to_destroy in walls_to_destroy:
                     await self.remove_from_group(wall_to_destroy, walls)
-                    if self.game.drawer:
-                        loop = get_event_loop()
-                        loop.call_soon(self.game.drawer.bake_static_background)
 
                     if bullet.parent_type == 'player':
                         bullet.parent.score += 1
+                if self.game.drawer:
+                    loop = get_event_loop()
+                    loop.call_soon(self.game.drawer.bake_static_background)
 
     async def freeze(self, player: Player):
         player.set_freeze()
