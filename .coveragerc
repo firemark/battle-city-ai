@@ -1,5 +1,7 @@
 [run]
 branch = true
 omit =
+    battle_city/client.py
+    battle_city/examples/*
     tests/*
     venv/*
