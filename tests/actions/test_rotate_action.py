@@ -13,7 +13,7 @@ import pytest
     ('down', Direction.DOWN),
 ])
 async def test_action_rotate(raw_direction, direction):
-    player = make_player()
+    player = make_player(x=0, y=0)
     game = make_game(player)
 
     message = {'action': 'rotate', 'direction': raw_direction}
@@ -22,6 +22,7 @@ async def test_action_rotate(raw_direction, direction):
     player.connection.write.assert_called_once_with({
         'status': 'OK',
         'direction': raw_direction,
+        'position': {'x': 0, 'y': 0},
     })
 
     assert player.direction is direction

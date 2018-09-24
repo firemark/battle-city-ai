@@ -7,8 +7,8 @@ from asynctest.mock import patch, CoroutineMock
 patch_messages = patch('battle_city.action_handler.messages')
 
 
-def make_player(had_action=False):
-    player = Player(x=1, y=2, player_id=0)
+def make_player(had_action=False, x=1, y=2):
+    player = Player(x=x, y=y, player_id=0)
     player.had_action = had_action
     connection = PlayerConnection(None, None)
     connection.write = CoroutineMock(spec=connection.write)

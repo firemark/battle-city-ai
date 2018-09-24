@@ -42,7 +42,11 @@ class ActionHandler(object):
                 return
             player.set_direction(direction)
             await cls.set_had_action(player, game)
-        await cls.write_ok(player, direction=direction.value)
+        await cls.write_ok(
+            player,
+            direction=direction.value,
+            position=player.get_position()
+        )
 
     @classmethod
     async def action_set_speed(cls, data: dict, player: Player, game: Game):
