@@ -7,6 +7,7 @@ def get_monster_serialized_data(monster, action='change'):
         speed=monster.speed,
         position=monster.get_position(),
         is_freeze=monster.is_freeze,
+        parent=monster.parent and monster.parent.id.hex,
         direction=monster.direction.value,
     )
 

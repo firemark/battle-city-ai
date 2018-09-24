@@ -12,6 +12,7 @@ class Monster(object):
     is_freeze = False
     position = None  # type: Rect
     old_position = None  # type: Rect
+    parent = None  # type: Monster
 
     SIZE = 8 
 
@@ -51,6 +52,12 @@ class Monster(object):
 
     def check_collision_with_old_position(self, monster):
         return self.old_position.colliderect(monster.position)
+
+    def union_new_position_with_old(self):
+        return self.position.union(self.old_position)
+
+    def set_parent(self, parent):
+        self.parent = parent
 
     def get_position(self):
         return dict(

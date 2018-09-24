@@ -50,6 +50,26 @@ def test_messages_get_monster_data():
         is_freeze=False,
         direction='up',
         speed=2,
+        parent=None,
+        position={'x': 1, 'y': 2},
+    )
+
+
+def test_messages_get_bullet_data():
+    player = Player(x=1, y=2, player_id=0)
+    bullet = Bullet(x=1, y=2)
+    bullet.set_direction(direction=Direction.UP)
+    bullet.set_parent(player)
+
+    assert messages.get_monster_serialized_data(bullet, action='socek') == dict(
+        id=bullet.id.hex,
+        type='bullet',
+        status='data',
+        action='socek',
+        is_freeze=False,
+        direction='up',
+        speed=8,
+        parent=player.id.hex,
         position={'x': 1, 'y': 2},
     )
 

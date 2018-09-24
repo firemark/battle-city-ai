@@ -29,7 +29,8 @@ When unit is spawned or changed (direction, speed or sth) then server sends all 
     "speed": SPEED, // int
     "position": {"x": X, "y": Y},
     "direction": "up"|"down"|"left"|"right",
-    "is_freeze": true|false // tank can be freezed max to 15 ticks of game.
+    "parent": null|PARENT_HEX,  // used to detect friendly/own/enemy bullet
+    "is_freeze": true|false // tank can be freeze max to 15 ticks of game.
 }
 ```
 

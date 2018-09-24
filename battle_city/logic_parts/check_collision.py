@@ -60,7 +60,7 @@ class CheckCollisionsLogicPart(LogicPart):
 
         for player, bullet in self.check_collision(players, bullets):
             await self.remove_from_group(bullet, bullets)
-            if bullet.parent_type == 'player':
+            if isinstance(bullet.parent, Player):
                 bullet.parent.score += 5
                 await self.freeze(player)
             else:
@@ -74,7 +74,7 @@ class CheckCollisionsLogicPart(LogicPart):
 
         for npc, bullet in self.check_collision(npcs, bullets):
             await self.remove_from_group(bullet, bullets)
-            if bullet.parent_type == 'player':
+            if isinstance(bullet.parent, Player):
                 bullet.parent.score += 200
                 await self.remove_from_group(npc, npcs)
 
@@ -112,7 +112,7 @@ class CheckCollisionsLogicPart(LogicPart):
                 for wall_to_destroy in walls_to_destroy:
                     await self.remove_from_group(wall_to_destroy, walls)
 
-                    if bullet.parent_type == 'player':
+                    if isinstance(bullet.parent, Player):
                         bullet.parent.score += 1
                 if self.game.drawer:
                     loop = get_event_loop()
