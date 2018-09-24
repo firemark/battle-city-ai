@@ -1,5 +1,5 @@
 from battle_city.game import Game
-from battle_city.monsters import Player, NPC
+from battle_city.monsters import Player, NPC, Bullet
 from battle_city.logic_parts.check_collision import CheckCollisionsLogicPart
 
 from unittest.mock import patch, Mock, call
@@ -78,3 +78,79 @@ def test_move_monster_with_monster(reverse):
 
     assert npc.get_position() == {'x': 28 + 4, 'y': 0}
     assert player.get_position() == {'x': 4 - 4, 'y': 0}
+
+
+@pytest.mark.asyncio
+async def test_check_freeze_player_with_bullet_collision():
+    game = Game()
+    player = Player(0, 0, 0)
+    attacker = Player(1, 64, 64)
+    game.alive_players = [player, attacker]
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(attacker)
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_player()
+
+    assert len(game.bullets) == 0
+    assert player.is_freeze is True
+    assert attacker.score == 5
+
+
+@pytest.mark.asyncio
+async def test_check_destroy_player_with_bullet_collision():
+    game = Game()
+    player = Player(0, 0, 0)
+    attacker = NPC(64, 64)
+    game.alive_players = [player]
+    game.npcs = [attacker]
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(attacker)
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_player()
+
+    assert len(game.bullets) == 0
+    assert len(game.players) == 0
+
+
+@pytest.mark.asyncio
+async def test_check_destroy_npc_with_bullet_collision():
+    game = Game()
+    player = Player(0, 0, 0)
+    game.npcs = [NPC(0, 0)]
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(player)
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_npc()
+
+    assert len(game.bullets) == 0
+    assert len(game.npcs) == 0
+    assert player.score == 200
+
+
+@pytest.mark.asyncio
+async def test_check_npc_with_another_npc_bullet_collision():
+    game = Game()
+    attacker = NPC(64, 64)
+    game.npcs = [NPC(0, 0), attacker]
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(attacker)
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_npc()
+
+    assert len(game.bullets) == 0
+    assert len(game.npcs) == 2
+
+
+@pytest.mark.asyncio
+async def test_check_bullet_both_collision():
+    game = Game()
+    game.bullets = [Bullet(0, 0), Bullet(0, 0), Bullet(-30, 0)]
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_yourself()
+
+    assert len(game.bullets) == 0

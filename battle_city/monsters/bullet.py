@@ -3,8 +3,6 @@ from pygame.rect import Rect
 from battle_city.monsters import Monster
 from battle_city.basic import Direction
 
-from uuid import UUID
-
 
 class Bullet(Monster):
     speed = 8
