@@ -15,6 +15,7 @@ class Game(object):
     npcs = None  # type:  List[NPC]
     bullets = None # type: List[Bullet]
     walls = None  # type: List[Wall]
+    coins = None  # type: List[Coin]
     player_spawns = None  # type: Dict[str, Spawner]
     npc_spawns = None  # type: List[Spawner]
     logic = None  # type: GameLogic
@@ -36,6 +37,7 @@ class Game(object):
         self.npc_spawns = []
         self.players = []
         self.alive_players = []
+        self.coins = []
         self.connections = []
         self.npcs_left = 20
         self.time_left = 300

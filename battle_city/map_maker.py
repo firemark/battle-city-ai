@@ -1,4 +1,4 @@
-from battle_city.monsters import Wall, Water, Metal, Spawner
+from battle_city.monsters import Wall, Water, Metal, Spawner, Coin
 from os import path
 
 from battle_city.monsters.wall import TinyWall
@@ -16,7 +16,7 @@ class MapMaker(object):
     CHAR_TO_METHOD = {
         '.': 'empty',
         ' ': 'empty',
-        '$': 'empty',
+        '$': 'coin',
         '\n': 'empty',
         '#': 'brick',
         '@': 'metal',
@@ -64,6 +64,10 @@ class MapMaker(object):
             for y_shift in range(0, Wall.SIZE, 8):
                 wall = TinyWall(x + x_shift, y + y_shift)
                 self.game.walls.append(wall)
+
+    def make_coin(self, char, cords, tile_cords):
+        coin = Coin(*cords)
+        self.game.coins.append(coin)
 
     def make_water(self, char, cords, tile_cords):
         water = Water(*cords)

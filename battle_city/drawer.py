@@ -59,6 +59,7 @@ class Drawer(object):
         IMG_PLAYER_2_2=_load_pack('player_22'),
         BULLET=_load_pack('bullet'),
         FREEZE=_load_simple('freeze'),
+        COIN=_load_simple('coin'),
     )
 
     WALLS = {
@@ -106,6 +107,7 @@ class Drawer(object):
         surface = Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self._render_solid_colors(surface)
         self._render_walls(surface)
+        self._render_coins(surface)
         self.background = surface
 
     def _render_solid_colors(self, surface: Surface):
@@ -150,6 +152,12 @@ class Drawer(object):
             area = (xx, yy, position.width, position.height)
             image = self.WALLS[type(wall)]
             surface.blit(image, cords, area)
+
+    def _render_coins(self, surface):
+        for coin in self.game.coins:
+            position = coin.position
+            cords = (self.OFFSET + position.x, self.OFFSET + position.y)
+            surface.blit(self.IMAGES['COIN'], cords)
 
     def _render_text(self):
         npcs_left = self.game.npcs_left

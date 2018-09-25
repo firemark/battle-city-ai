@@ -1,5 +1,5 @@
 from battle_city.game import Game
-from battle_city.monsters import Player, NPC, Bullet
+from battle_city.monsters import Player, NPC, Bullet, Coin
 from battle_city.logic_parts.check_collision import CheckCollisionsLogicPart
 
 from unittest.mock import call
@@ -23,6 +23,7 @@ async def test_do_it():
         call.check_bullets_with_walls(),
         call.check_tank_yourself(),
         call.check_tank_collisions_with_walls(),
+        call.check_player_collisions_with_coins(),
     ]
 
 
@@ -221,3 +222,19 @@ async def test_check_player_wall_collision(wall_cls):
 
     # move to nearest empty place
     assert game.alive_players[0].get_position() == {'x': 32, 'y': 32}
+
+
+@pytest.mark.asyncio
+async def test_check_player_coin_collision():
+    game = Game()
+    player = Player(0, 0, 32)
+    game.alive_players = [player]
+    game.coins = [Coin(48, 32)]
+
+    player.set_position(48, 32)
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_player_collisions_with_coins()
+
+    assert len(game.coins) == 0
+    assert player.score == 100

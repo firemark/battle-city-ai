@@ -23,10 +23,9 @@ class Wall(object):
             y=self.position.y,
         )
 
-    def hurt(self, direction: Direction) -> (bool, bool):
+    def hurt(self) -> (bool, bool):
         """
 
-        :param direction:
         :return: (is_destroyed, is_touched)
         """
         return True, True
@@ -38,11 +37,11 @@ class TinyWall(Wall):
 
 class Metal(Wall):
 
-    def hurt(self, direction: Direction) -> (bool, bool):
+    def hurt(self) -> (bool, bool):
         return False, True
 
 
 class Water(Wall):
 
-    def hurt(self, direction: Direction):
+    def hurt(self):
         return False, False

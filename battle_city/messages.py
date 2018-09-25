@@ -68,3 +68,11 @@ def get_tick_game_data(game):
         ticks_left=game.time_left,
         npcs_left=len(game.npcs),
     )
+
+
+def get_remove_monster_data(monster):
+    return dict(
+        status='data',
+        action='destroy',
+        id=monster.id.hex,
+    )

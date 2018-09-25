@@ -18,6 +18,7 @@ class CheckCollisionsLogicPart(LogicPart):
         await self.check_bullets_with_walls()
         await self.check_tank_yourself()
         await self.check_tank_collisions_with_walls()
+        await self.check_player_collisions_with_coins()
 
     async def check_tank_yourself(self):
         game = self.game
@@ -99,7 +100,7 @@ class CheckCollisionsLogicPart(LogicPart):
         walls = game.walls
 
         for bullet, wall in self.check_collision(bullets, walls):
-            is_destroyed, is_touched = wall.hurt(bullet.direction)
+            is_destroyed, is_touched = wall.hurt()
 
             if is_touched:
                 await self.remove_from_group(bullet, bullets)
@@ -110,13 +111,13 @@ class CheckCollisionsLogicPart(LogicPart):
                     rect=bullet.get_long_collision_rect(),
                 )
                 for wall_to_destroy in walls_to_destroy:
-                    await self.remove_from_group(wall_to_destroy, walls)
+                    is_destroyed, _ = wall_to_destroy.hurt()
+                    if is_destroyed:
+                        await self.remove_from_group(wall_to_destroy, walls)
 
                     if isinstance(bullet.parent, Player):
                         bullet.parent.score += 1
-                if self.game.drawer:
-                    loop = get_event_loop()
-                    loop.call_soon(self.game.drawer.bake_static_background)
+                self.refresh_background()
 
     async def freeze(self, player: Player):
         player.set_freeze()
@@ -157,6 +158,15 @@ class CheckCollisionsLogicPart(LogicPart):
             elif monster.position.bottom > self.game.HEIGHT:
                 monster.position.y = self.game.HEIGHT - monster.SIZE
 
+    async def check_player_collisions_with_coins(self):
+        players = self.game.alive_players
+        coins = self.game.coins
+
+        for player, coin in self.check_collision(players, coins):
+            await self.remove_from_group(coin, self.game.coins)
+            player.score += 100
+            self.refresh_background()
+
     @classmethod
     def move_monster_with_static_obj(cls, monster, other):
         cls.move_monster_with_static_obj_axis(monster, other, axis=0)
@@ -185,13 +195,19 @@ class CheckCollisionsLogicPart(LogicPart):
         elif diff < 0:
             monster_pos[axis] -= cls.get_border_diff(monster_pos, other_pos, axis)
 
+    def refresh_background(self):
+        if not self.game.drawer:
+            return
+        loop = get_event_loop()
+        loop.call_soon(self.game.drawer.bake_static_background)
+
     async def remove_from_group(self, monster, group):
         try:
             group.remove(monster)
         except ValueError:
             return
 
-        data = dict(status='data', action='destroy', id=monster.id.hex)
+        data = messages.get_remove_monster_data(monster)
         await self.game.broadcast(data)
 
     @staticmethod
