@@ -22,6 +22,8 @@
 
 It is a simple clone of battle city from NES.
 
+![Game](image.png)
+
 ## How does this work?
 The game runs on a server with a game window and listens for two connections: player1 and player2.
 Each player is a separate client (tank) connected to the game server. The clients control their tanks 
@@ -40,7 +42,6 @@ There are two goals:
 In order to survive and score the biggest amount of points, you need to program the moves 
 of your client with a thorough and clever approach. 
 
-
 ### Tips
 
 TODO
@@ -50,12 +51,13 @@ TODO
 * **1** for each destroyed tiny-brick
 * **5** for each 'freeze' second player
 * **200** for each destroyed NPC tank
-* TODO: **300** for each coin
+* **100** for each coin
 
 ## Protocol documentation
 
 Is [here](docs/).
 
+* [General rules of game](docs/rules.md)
 * [General Protocol](docs/protocol.md)
 * [Player actions](docs/actions.md)
 * [Unit's messages](docs/units.md)
@@ -76,35 +78,36 @@ python setup.py develop
 
 ## How to write first bot?
 
-First, copy [example code](battle_city/client.py)
+First, copy [example code](battle_city/client.py) to main dir with game.
 (more examples are [here](battle_city/examples/))
 
-Now:
+remember about virtualenv or pipenv!
+
+https://docs.python.org/3/tutorial/venv.html
+https://pipenv.readthedocs.io/en/latest/
 
 ```sh
-# remember about virtualenv or pipenv!
-# https://docs.python.org/3/tutorial/venv.html
-# https://pipenv.readthedocs.io/en/latest/
-
-# scripts have a optional argument -a for player A and -b for player B
-# command would be a runner, example "python copied_client.py" - remember about command (python, nodejs, ruby or something else) to run your script!!
-# default command for -a and -b is "python -m battle_city.client"
-./run_game.sh --help
-run_game.sh [OPTIONS...]
-    --help              print this text
-    --cmd-p1 CMD_P1     command to run client as player1. Default is "python -m battle_city.client"
-    --cmd-p2 CMD_P2     command to run client as player2. Default is "python -m battle_city.client"
-    --map MAP           select map to run game. Default is pilif
-    --ip IP             IP of server. Default is 127.0.0.1
-    --port PORT         PORT of server. Default is 8888
-    --hidden-window     don't show window with game, run only server
-
-
 # linux/mingw/osx/wsl
 ./run_game.sh --cmd-p1 "python copied_client.py"
 # The color of your tank will be yellow.
 # tmux version - more hackerable (with split screens in terminal)!
 ./run_game_tmux.sh --cmd-p1 "python copied_client.py"
+```
+
+scripts have a optional argument -a for player A and -b for player B
+
+command would be a runner, example `"python copied_client.py"` - **remember** about quotes and command (python, nodejs, ruby or something else) to run your script!!
+
+```
+run_game.sh [OPTIONS...]
+    --help                      print this text
+    --cmd-p1 CMD_P1             command to run client as player1. Default is "python -m battle_city.client"
+    --cmd-p2 CMD_P2             command to run client as player2. Default is "python -m battle_city.client silent"
+    --map MAP                   select map to run game. Default is pilif
+    --ip IP                     IP of server. Default is 127.0.0.1
+    --port PORT                 PORT of server. Default is 8888
+    --speed SPEED               tick speed of game. default is 1
+    --hidden-window             don't show window with game, run only server
 ```
 
 The `run_game.sh` script will run the whole game with two clients. There is no need to run anything else.
@@ -117,7 +120,7 @@ use it in `run_game.sh` script (examples are above).
 ## Server script
 
 ```
-python -m battle_city.server [--ip IP] [--port PORT] [--hide-window]
+python -m battle_city.server [--ip IP] [--port PORT] [--hide-window] [--speed SPEED]
 ```
 
 Note that `run_game.sh` script runs the server as well as both clients by default.
@@ -127,7 +130,7 @@ in your own script.
 ## Run tests
 
 ```sh
-pip install -e .[test]
+pip install -e '.[test]'
 pytest tests/
 ```
 
@@ -142,4 +145,5 @@ pytest tests/
 ## Contributors
 
 * Firemark - game logic and everything else
-* Stachu - documentation, beta testing
+* Stachu - documentation improvment, beta testing
+* Noemi - beta testing
