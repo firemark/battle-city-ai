@@ -14,7 +14,7 @@ but tank can make one action per turn (so is not possible to shot on every tick)
 
 
 ## Possible actions of tanks
-Protocol of actions are descripted [here](./actions.md)
+Protocol of actions are described [here](./actions.md)
 
 ### change speed
 TODO
