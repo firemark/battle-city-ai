@@ -2,10 +2,12 @@ from battle_city.game import Game
 from battle_city.monsters import Player, NPC, Bullet
 from battle_city.logic_parts.check_collision import CheckCollisionsLogicPart
 
-from unittest.mock import patch, Mock, call
+from unittest.mock import call
 from asynctest.mock import Mock as AsyncMock
 
 import pytest
+
+from battle_city.monsters.wall import TinyWall, Metal, Water
 
 
 @pytest.mark.asyncio
@@ -154,3 +156,68 @@ async def test_check_bullet_both_collision():
     await logic.check_bullets_yourself()
 
     assert len(game.bullets) == 0
+
+
+@pytest.mark.asyncio
+async def test_check_bullet_tinywall_collision():
+    game = Game()
+    player = Player(0, 0, 0)
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(player)
+    game.walls = [TinyWall(0, 0)]
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_walls()
+
+    assert len(game.bullets) == 0
+    assert len(game.walls) == 0
+    assert player.score == 1
+
+
+@pytest.mark.asyncio
+async def test_check_bullet_metal_collision():
+    game = Game()
+    player = Player(0, 0, 0)
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(player)
+    game.walls = [Metal(0, 0)]
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_walls()
+
+    assert len(game.bullets) == 0
+    assert len(game.walls) == 1
+    assert player.score == 0
+
+
+@pytest.mark.asyncio
+async def test_check_bullet_water_collision():
+    game = Game()
+    player = Player(0, 0, 0)
+    game.bullets = [Bullet(0, 0)]
+    game.bullets[0].set_parent(player)
+    game.walls = [Water(0, 0)]
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_bullets_with_walls()
+
+    assert len(game.bullets) == 1
+    assert len(game.walls) == 1
+    assert player.score == 0
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('wall_cls', [Metal, Water])
+async def test_check_player_wall_collision(wall_cls):
+    game = Game()
+    player = Player(0, 0, 32)
+    game.alive_players = [player]
+    game.walls = [wall_cls(64, 32)]
+
+    player.set_position(48, 32)
+
+    logic = CheckCollisionsLogicPart(game)
+    await logic.check_tank_collisions_with_walls()
+
+    # move to nearest empty place
+    assert game.alive_players[0].get_position() == {'x': 32, 'y': 32}
