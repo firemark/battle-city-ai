@@ -14,19 +14,29 @@ but tank can make one action per turn (so is not possible to shot on every tick)
 
 
 ## Possible actions of tanks
+Every action can run only once per *TURN*
 Protocol of actions are described [here](./actions.md)
 
 ### change speed
-TODO
+Player tanks can change speed from 0 to 2 pixels per *TICK*.
+
+NPC tanks has a constant speed 2.
+
+Bullet has a constant speed 8.
 
 ### freeze / unfreeze
-TODO
+When bullet from another player touched your tank then tank will be frozen.
+
+When tank is frozen then you can move (but you can rotate and shoot!).
+
+Time of freeze is randomized from 0 to 300 ticks.
 
 ### rotate
-TODO
+To change direction of your tank, you must rotate them.
+When tank is rotated then position of tank will snap to grid 16×16 pixels.
 
-### shot
-TODO
+### shoot
+Setup bullet in your tank and will shoot in next *TURN*.
 
 ## Monsters
 
@@ -34,13 +44,17 @@ TODO
 TODO
 
 ### NPC
-TODO
+OMG KILL THEM!
+
+You will get 200 points for each killed NPC.
 
 ### Tanks
-TODO
+
+Tanks controlled by bots.
 
 ## Walls
 TODO
 
 ## Coins
-TODO
+
+Every gained coin gets 100 points
