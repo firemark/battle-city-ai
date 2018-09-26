@@ -13,6 +13,7 @@ tmux -2 new-session -d -s $SESSION "/bin/sh"
 tmux split-window -v "/bin/sh"
 tmux select-pane -t 0
 tmux send-keys "trap finish INT" C-m
+tmux send-keys "trap finish exit" C-m
 tmux send-keys "finish() { tmux kill-session -t $SESSION; }" C-m
 tmux send-keys "clear; echo 'press CTRL+C (^C) to close.'; "
 tmux send-keys "python -m battle_city.server --ip $IP --port $PORT --map $MAP --speed $SPEED $SERVER_OPTS; "
