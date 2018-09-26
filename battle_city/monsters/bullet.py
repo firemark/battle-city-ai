@@ -1,4 +1,5 @@
 from pygame.rect import Rect
+from math import floor, ceil
 
 from battle_city.monsters import Monster
 from battle_city.basic import Direction
@@ -10,12 +11,14 @@ class Bullet(Monster):
 
     def get_long_collision_rect(self):
         pos = self.position
-        x = pos.x
-        y = pos.y
         size = self.SIZE
         half_size = size // 2
 
         if self.direction in [Direction.UP, Direction.DOWN]:
-            return Rect(x + half_size - 16, y, 32, size)
+            x = floor((pos.x - half_size) / 16) * 16
+            y = pos.y
+            return Rect(x, y, 32, size)
         else:
-            return Rect(x, y + half_size - 16, size, 32)
+            x = pos.x
+            y = floor((pos.y - half_size) / 16) * 16
+            return Rect(x, y, size, 32)

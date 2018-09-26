@@ -6,6 +6,7 @@ from battle_city import messages
 
 
 from random import random, choice
+from math import floor
 
 
 class TickLogicPart(LogicPart):
@@ -55,18 +56,19 @@ class TickLogicPart(LogicPart):
 
         size = Bullet.SIZE
         half_size = size // 2
+        speed = Bullet.speed
 
         if direction is Direction.UP:
             x = position.centerx - half_size
-            y = position.top - size
+            y = floor((position.top + speed) / size) * size
         elif direction is Direction.DOWN:
             x = position.centerx - half_size
-            y = position.bottom + size
+            y = floor((position.bottom - speed) / size) * size
         elif direction is Direction.LEFT:
-            x = position.left - size
+            x = floor((position.left + speed) / size) * size
             y = position.centery - half_size
         elif direction is Direction.RIGHT:
-            x = position.right + size
+            x = floor((position.right - speed) / size) * size
             y = position.centery - half_size
         else:
             x = 0

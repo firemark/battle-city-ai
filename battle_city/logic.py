@@ -15,8 +15,8 @@ class GameLogic(object):
         self.game = game
         self.parts = [
             MoveLogicPart(game),
-            TickLogicPart(game),
             CheckCollisionsLogicPart(game),
+            TickLogicPart(game),
             SetOldPositionLogicPart(game),
         ]
 

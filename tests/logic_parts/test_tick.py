@@ -135,11 +135,11 @@ async def test_spawn_bullets(messages):
 
     assert player_bullet.parent is game.alive_players[0]
     assert player_bullet.direction == Direction.DOWN
-    assert player_bullet.get_position() == {'x': 128 + 16 - 2, 'y': 128 + 32 + 4}
+    assert player_bullet.get_position() == {'x': 128 + 16 - 2, 'y': 152}
 
     assert npc_bullet.parent is game.npcs[0]
     assert npc_bullet.direction == Direction.LEFT
-    assert npc_bullet.get_position() == {'x': 128 - 4, 'y': 128 + 16 - 2}
+    assert npc_bullet.get_position() == {'x': 136, 'y': 128 + 16 - 2}
 
     assert broadcast_mock.call_args_list == [
         call(messages.get_monster_serialized_data.return_value),

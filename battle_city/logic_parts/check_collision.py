@@ -60,7 +60,10 @@ class CheckCollisionsLogicPart(LogicPart):
         bullets = game.bullets
 
         for player, bullet in self.check_collision(players, bullets):
+            if bullet.parent is player:
+                continue
             await self.remove_from_group(bullet, bullets)
+
             if isinstance(bullet.parent, Player):
                 bullet.parent.score += 5
                 await self.freeze(player)
@@ -74,6 +77,9 @@ class CheckCollisionsLogicPart(LogicPart):
         bullets = game.bullets
 
         for npc, bullet in self.check_collision(npcs, bullets):
+            if bullet.parent is npc:
+                continue
+
             await self.remove_from_group(bullet, bullets)
             if isinstance(bullet.parent, Player):
                 bullet.parent.score += 200
@@ -99,25 +105,22 @@ class CheckCollisionsLogicPart(LogicPart):
         bullets = game.bullets
         walls = game.walls
 
-        for bullet, wall in self.check_collision(bullets, walls):
-            is_destroyed, is_touched = wall.hurt()
+        for bullet in bullets:
+            with_collision_walls = bullet.check_collision_with_group(
+                group=walls,
+                rect=bullet.get_long_collision_rect(),
+            )
 
-            if is_touched:
-                await self.remove_from_group(bullet, bullets)
+            for wall in with_collision_walls:
+                is_destroyed, is_touched = wall.hurt()
 
-            if is_destroyed:
-                walls_to_destroy = bullet.check_collision_with_group(
-                    group=walls,
-                    rect=bullet.get_long_collision_rect(),
-                )
-                for wall_to_destroy in walls_to_destroy:
-                    is_destroyed, _ = wall_to_destroy.hurt()
-                    if is_destroyed:
-                        await self.remove_from_group(wall_to_destroy, walls)
-
+                if is_touched:
+                    await self.remove_from_group(bullet, bullets)
+                if is_destroyed:
+                    await self.remove_from_group(wall, walls)
                     if isinstance(bullet.parent, Player):
                         bullet.parent.score += 1
-                self.refresh_background()
+            self.refresh_background()
 
     async def freeze(self, player: Player):
         player.set_freeze()
