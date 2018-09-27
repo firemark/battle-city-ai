@@ -23,6 +23,7 @@ class Game(object):
     ready = False  # type: False
     step_lock = None  # type: Lock
     npcs_left = 0  # type: int
+    ticks = 0  # type: int
 
     WIDTH = 512
     HEIGHT = 512
@@ -41,6 +42,7 @@ class Game(object):
         self.connections = []
         self.npcs_left = 20
         self.time_left = 300
+        self.ticks = 0
 
         self.logic = GameLogic(self)
         self.drawer = None

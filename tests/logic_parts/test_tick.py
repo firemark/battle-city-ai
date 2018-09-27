@@ -12,29 +12,16 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_count_ticks():
-    game = Game()
-    logic = TickLogicPart(game)
-    logic.ticks = 5
-
-    await logic.do_it()
-
-    assert logic.ticks == 6
-
-
-@pytest.mark.asyncio
 async def test_do_actions_after_300_ticks():
     game = Game()
     logic = TickLogicPart(game)
-    logic.ticks = 299
+    game.ticks = 300
 
     with patch.multiple(
             logic,
             unfreeze_players=DEFAULT,
             do_it_after_ticks=DEFAULT) as patch_values:
         await logic.do_it()
-
-    assert logic.ticks == 0
 
     patch_values['unfreeze_players'].assert_called_once_with()
     patch_values['do_it_after_ticks'].assert_called_once_with()
@@ -44,15 +31,13 @@ async def test_do_actions_after_300_ticks():
 async def test_do_actions_after_10_ticks():
     game = Game()
     logic = TickLogicPart(game)
-    logic.ticks = 9
+    game.ticks = 10
 
     with patch.multiple(
             logic,
             unfreeze_players=DEFAULT,
             do_it_after_ticks=DEFAULT) as patch_values:
         await logic.do_it()
-
-    assert logic.ticks == 10
 
     assert not patch_values['unfreeze_players'].called
     patch_values['do_it_after_ticks'].assert_called_once_with()
@@ -62,23 +47,17 @@ async def test_do_actions_after_10_ticks():
 async def test_do_it_after_ticks():
     game = Game()
     game.time_left = 250
-    game.alive_players = [Player(0, 128, 128)]
-    game.npcs = [NPC(128, 128)]
     logic = TickLogicPart(game)
 
     with patch.multiple(
             logic,
-            spawn_bullets=DEFAULT,
-            spawn_npc=DEFAULT,
             unset_player_actions=DEFAULT,
             send_info=DEFAULT,
             do_sth_with_npcs=DEFAULT) as patch_values:
         await logic.do_it_after_ticks()
 
     patch_values['unset_player_actions'].assert_called_once_with()
-    patch_values['spawn_npc'].assert_called_once_with()
     patch_values['do_sth_with_npcs'].assert_called_once_with()
-    patch_values['spawn_bullets'].assert_called_once_with()
     patch_values['send_info'].assert_called_once_with()
 
     assert game.time_left == 249
@@ -97,88 +76,10 @@ async def test_unfreeze_players():
 
 
 @pytest.mark.asyncio
-async def test_unset_player_actions():
-    game = Game()
-    game.alive_players = [Player(0, 128, 128), Player(1, 128, 128)]
-    for player in game.players:
-        player.set_had_action()
-
-    logic = TickLogicPart(game)
-
-    await logic.unset_player_actions()
-
-    assert not game.alive_players[0].had_action
-    assert not game.alive_players[1].had_action
-
-
-@pytest.mark.asyncio
-@patch('battle_city.logic_parts.tick.messages')
-async def test_spawn_bullets(messages):
-    game = Game()
-    game.alive_players = [Player(0, 128, 128)]
-    game.npcs = [NPC(128, 128)]
-    logic = TickLogicPart(game)
-
-    game.alive_players[0].set_direction(Direction.DOWN)
-    game.npcs[0].set_direction(Direction.LEFT)
-
-    game.alive_players[0].set_shot()
-    game.npcs[0].set_shot()
-
-    with patch.object(game, 'broadcast') as broadcast_mock:
-        await logic.spawn_bullets()
-
-    assert not game.alive_players[0].is_shot
-    assert not game.npcs[0].is_shot
-
-    player_bullet, npc_bullet = game.bullets
-
-    assert player_bullet.parent is game.alive_players[0]
-    assert player_bullet.direction == Direction.DOWN
-    assert player_bullet.get_position() == {'x': 128 + 16 - 2, 'y': 152}
-
-    assert npc_bullet.parent is game.npcs[0]
-    assert npc_bullet.direction == Direction.LEFT
-    assert npc_bullet.get_position() == {'x': 136, 'y': 128 + 16 - 2}
-
-    assert broadcast_mock.call_args_list == [
-        call(messages.get_monster_serialized_data.return_value),
-        call(messages.get_monster_serialized_data.return_value),
-    ]
-
-    assert messages.get_monster_serialized_data.call_args_list == [
-        call(player_bullet, action='spawn'),
-        call(npc_bullet, action='spawn'),
-    ]
-
-
-@pytest.mark.asyncio
-@patch('battle_city.logic_parts.tick.random')
-@patch('battle_city.logic_parts.tick.messages')
-async def test_spawn_npc(messages, random_mock):
-    game = Game()
-    game.npc_spawns = [Spawner(x=128, y=128)]
-    logic = TickLogicPart(game)
-    random_mock.return_value = 0.0
-
-    with patch.object(game, 'broadcast') as broadcast_mock:
-        await logic.spawn_npc()
-
-    npc = game.npcs[0]
-    assert npc.get_position() == {'x': 128, 'y': 128}
-
-    broadcast_mock.assert_called_once_with(
-        messages.get_monster_serialized_data.return_value
-    )
-    messages.get_monster_serialized_data.assert_called_once_with(npc, action='spawn')
-
-
-@pytest.mark.asyncio
 @patch('battle_city.logic_parts.tick.messages')
 async def test_send_info(messages):
     game = Game()
     logic = TickLogicPart(game)
-    messages.get_tick_game_data.return_value = dict(socek='socek')
 
     with patch.object(game, 'broadcast') as broadcast_mock:
         await logic.send_info()
