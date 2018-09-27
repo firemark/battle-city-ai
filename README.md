@@ -94,8 +94,6 @@ https://pipenv.readthedocs.io/en/latest/
 ./run_game_tmux.sh --cmd-p1 "python copied_client.py"
 ```
 
-scripts have a optional argument -a for player A and -b for player B
-
 command would be a runner, example `"python copied_client.py"` - **remember** about quotes and command (python, nodejs, ruby or something else) to run your script!!
 
 ```
