@@ -14,7 +14,8 @@ but tank can make one action per turn (so is not possible to shot on every tick)
 
 
 ## Possible actions of tanks
-Every action can run only once per *TURN*
+Every action can run only once per *TURN*.
+
 Protocol of actions are described [here](./actions.md)
 
 ### change speed
@@ -44,7 +45,7 @@ Setup bullet in your tank and will shoot in next *TURN*.
 TODO
 
 ### NPC
-OMG KILL THEM!
+OMG KILL IT!
 
 You will get 200 points for each killed NPC.
 
