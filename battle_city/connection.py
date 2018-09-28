@@ -21,10 +21,15 @@ class PlayerConnection(object):
 
     async def write(self, data):
         writer = self.writer
+        if writer is None:
+            return
         raw_data = json.dumps(data).encode()
         writer.write(raw_data)
         writer.write(b'\n')
-        await writer.drain()
+        try:
+            await writer.drain()
+        except ConnectionError:
+            self.writer = None
 
     async def write_ok(self, **kwargs):
         data = {'status': 'OK'}
