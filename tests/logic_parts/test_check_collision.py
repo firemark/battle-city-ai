@@ -14,6 +14,7 @@ from battle_city.monsters.wall import TinyWall, Metal, Water
 @pytest.mark.asyncio
 async def test_do_it():
     logic = AsyncMock(CheckCollisionsLogicPart(None))
+    logic.is_must_refresh_background = False
 
     await CheckCollisionsLogicPart.do_it(logic)
 
@@ -26,6 +27,17 @@ async def test_do_it():
         call.check_tank_collisions_with_walls(),
         call.check_player_collisions_with_coins(),
     ]
+
+
+@pytest.mark.asyncio
+async def test_do_it_with_refresh():
+    logic = AsyncMock(CheckCollisionsLogicPart(None))
+    logic.is_must_refresh_background = True
+
+    await CheckCollisionsLogicPart.do_it(logic)
+
+    assert logic.method_calls[-1] == call.refresh_background
+    assert not logic.is_must_refresh_background
 
 
 @pytest.mark.asyncio
@@ -174,6 +186,7 @@ async def test_check_bullet_tinywall_collision():
     assert len(game.bullets) == 0
     assert len(game.walls) == 0
     assert player.score == 1
+    assert logic.is_must_refresh_background
 
 
 @pytest.mark.asyncio
@@ -184,13 +197,13 @@ async def test_check_bullet_metal_collision():
     game.bullets[0].set_parent(player)
     game.walls = SlicedArray([Metal(0, 0)])
 
-
     logic = CheckCollisionsLogicPart(game)
     await logic.check_bullets_with_walls()
 
     assert len(game.bullets) == 0
     assert len(game.walls) == 1
     assert player.score == 0
+    assert not logic.is_must_refresh_background
 
 
 @pytest.mark.asyncio
@@ -207,6 +220,7 @@ async def test_check_bullet_water_collision():
     assert len(game.bullets) == 1
     assert len(game.walls) == 1
     assert player.score == 0
+    assert not logic.is_must_refresh_background
 
 
 @pytest.mark.asyncio
@@ -239,4 +253,5 @@ async def test_check_player_coin_collision():
     await logic.check_player_collisions_with_coins()
 
     assert len(game.coins) == 0
+    assert logic.is_must_refresh_background
     assert player.score == 100

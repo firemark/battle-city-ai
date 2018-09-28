@@ -23,8 +23,6 @@ class SpawnLogicPart(LogicPart):
         await self.spawn_bullets()
         await self.spawn_npc()
 
-        self.game.time_left -= 1
-
     async def unset_player_actions(self):
         for player in self.game.alive_players:
             player.had_action = False

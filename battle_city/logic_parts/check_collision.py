@@ -10,6 +10,7 @@ from math import ceil, floor
 
 
 class CheckCollisionsLogicPart(LogicPart):
+    is_must_refresh_background = False
 
     async def do_it(self):
         await self.check_bullets_with_player()
@@ -19,6 +20,10 @@ class CheckCollisionsLogicPart(LogicPart):
         await self.check_tank_yourself()
         await self.check_tank_collisions_with_walls()
         await self.check_player_collisions_with_coins()
+
+        if self.is_must_refresh_background:
+            self.is_must_refresh_background = False
+            self.refresh_background()
 
     async def check_tank_yourself(self):
         game = self.game
@@ -118,9 +123,9 @@ class CheckCollisionsLogicPart(LogicPart):
                     await self.remove_from_group(bullet, bullets)
                 if is_destroyed:
                     await self.remove_from_group(wall, walls)
+                    self.is_must_refresh_background = True
                     if isinstance(bullet.parent, Player):
                         bullet.parent.score += 1
-            self.refresh_background()
 
     async def freeze(self, player: Player):
         player.set_freeze()
@@ -167,8 +172,8 @@ class CheckCollisionsLogicPart(LogicPart):
 
         for player, coin in self.check_collision(players, coins):
             await self.remove_from_group(coin, self.game.coins)
+            self.is_must_refresh_background = True
             player.score += 100
-            self.refresh_background()
 
     @classmethod
     def move_monster_with_static_obj(cls, monster, other):

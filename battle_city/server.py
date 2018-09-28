@@ -82,4 +82,5 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    import cProfile
+    cProfile.run('run()', 'stats')
