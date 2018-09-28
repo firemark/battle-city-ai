@@ -26,12 +26,16 @@ class Game(object):
     npcs_left = 0  # type: int
     ticks = 0  # type: int
 
+    was_ready = False
+    was_over = False
+    turn_off_after_end = False
+
     WIDTH = 512
     HEIGHT = 512
 
     MAX_NPC_IN_AREA = 5
 
-    def __init__(self):
+    def __init__(self, turn_off_after_end=False):
         self.npcs = []
         self.bullets = []
         self.walls = SlicedArray()
@@ -44,6 +48,7 @@ class Game(object):
         self.npcs_left = 20
         self.time_left = 300
         self.ticks = 0
+        self.turn_off_after_end = turn_off_after_end
 
         self.logic = GameLogic(self)
         self.drawer = None
@@ -115,7 +120,20 @@ class Game(object):
             await self.broadcast(data)
 
     async def step(self):
-        if self.is_ready() and not self.is_over():
+        is_ready = self.is_ready()
+        is_over = self.is_over()
+
+        if not self.was_ready and is_ready:
+            self.was_ready = True
+            await self.broadcast(messages.get_start_game_data())
+
+        if is_over and not self.was_over:
+            self.was_over = True
+            await self.broadcast(messages.get_over_game_data(self))
+            if self.turn_off_after_end:
+                exit(0)  # little dangerous lol
+
+        if is_ready and not is_over:
             await self.logic.step()
             await self.send_informations()
         if self.drawer is not None:

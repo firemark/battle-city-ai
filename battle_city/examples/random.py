@@ -17,6 +17,7 @@ class Game(object):
         self.reader = reader
         self.writer = writer
         self.first_tick = False
+        self.start = False
 
         loop.call_soon(self._loop)
 
@@ -29,18 +30,19 @@ class Game(object):
             await self.send(dict(action='greet', name='TEST'))
             self.first_tick = True
 
-        action = randint(0, 2)
+        if self.start:
+            action = randint(0, 2)
 
-        if action == 0:
-            speed = randint(0, 2)
-            data = dict(action='set_speed', speed=speed)
-        elif action == 1:
-            direction = choice(['up', 'down', 'left', 'right'])
-            data = dict(action='rotate', direction=direction)
-        else:
-            data = dict(action='shoot')
+            if action == 0:
+                speed = randint(0, 2)
+                data = dict(action='set_speed', speed=speed)
+            elif action == 1:
+                direction = choice(['up', 'down', 'left', 'right'])
+                data = dict(action='rotate', direction=direction)
+            else:
+                data = dict(action='shoot')
 
-        await self.send(data)
+            await self.send(data)
 
         seconds_to_wait = 0.25
         loop.call_later(seconds_to_wait, self._loop)
@@ -60,6 +62,10 @@ class Game(object):
             color = '\033[91m'  # red color
         elif data.get('status') == 'game':
             color = '\033[34m'  # blue color
+            if data.get('action') == 'start':
+                self.start = True
+            elif data.get('action') == 'over':
+                self.start = False
         elif data.get('action') == 'spawn':
             color = '\033[92m'  # green color
         elif data.get('action') == 'destroy':

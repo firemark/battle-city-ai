@@ -32,6 +32,8 @@ class Game(object):
         self.npc = 0
         self.time = 0
         self.draw = Draw(self)
+        self.start = False
+        self.end = False
 
         loop.call_soon(self._loop)
 
@@ -50,9 +52,14 @@ class Game(object):
             for cord in data['cords']:
                 self._add_to_map(cord)
         elif data.get('status') == 'game':
-            if data['action'] == 'info':
+            action = data['action']
+            if action == 'info':
                 self.time = data['ticks_left']
                 self.npc = data['npcs_left']
+            elif action == 'start':
+                self.start = True
+            elif action == 'over':
+                self.end = True
         elif data.get('status') == 'data':
             id = data['id']
             if data['action'] in {'move', 'change', 'freeze'}:
@@ -114,10 +121,11 @@ class Draw:
         for obj in game.map.values():
             pygame.draw.rect(self.window, obj['color'], obj['rect'])
 
-
-        label = 'NPC: {:03d} TIME: {:03d}'.format(
+        label = 'NPC: {:03d} TIME: {:03d} {} {}'.format(
             game.npc,
             game.time,
+            'START' if game.start else 'WAIT',
+            'OVER' if game.end else '',
         )
         image = self.font.render(label, 1, (0xff, 0xff, 0xff))
         self.window.blit(image, (0, 512))

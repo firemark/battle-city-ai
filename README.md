@@ -108,14 +108,15 @@ Another examples:
 
 ```
 run_game.sh [OPTIONS...]
-    --help                      print this text
-    --cmd-p1 CMD_P1             command to run client as player1. Default is "python -m battle_city.client"
-    --cmd-p2 CMD_P2             command to run client as player2. Default is "python -m battle_city.client silent"
-    --map MAP                   select map to run game. Default is pilif
-    --ip IP                     IP of server. Default is 127.0.0.1
-    --port PORT                 PORT of server. Default is 8888
-    --speed SPEED               tick speed of game. default is 1
-    --hidden-window             don't show window with game, run only server
+    --help               print this text
+    --cmd-p1 CMD_P1	     command to run client as player1. Default is "python -m battle_city.examples.random"
+    --cmd-p2 CMD_P2	     command to run client as player2. Default is "python -m battle_city.examples.random silent"
+    --map MAP            select map to run game. Default is pilif
+    --ip IP              IP of server. Default is 127.0.0.1
+    --port PORT          PORT of server. Default is 8888
+    --speed SPEED        tick speed of game. default is 1
+    --hidden-window      don't show window with game, run only server
+    --turn-off-after-end turn off server when game is end. Good option for machine learning
 ```
 
 The `run_game.sh` script will run the whole game with two clients. There is no need to run anything else.

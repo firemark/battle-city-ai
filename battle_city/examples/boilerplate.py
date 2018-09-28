@@ -10,6 +10,7 @@ class Game(object):
         self.reader = reader
         self.writer = writer
         self.first_tick = False
+        self.start = False
 
         loop.call_soon(self._loop)
 
@@ -21,6 +22,10 @@ class Game(object):
             await self.send(dict(action='greet', name='TEST'))
             self.first_tick = True
 
+        if self.start:
+            # do sth
+            pass
+
         # await self.send(json_data)
         seconds_to_wait = 0.25
         loop.call_later(seconds_to_wait, self._loop)
@@ -30,7 +35,11 @@ class Game(object):
         get json from server and do something
         for example show on console data
         """
-        pass
+        if data.get('status') == 'game':
+            if data.get('action') == 'start':
+                self.start = True
+            elif data.get('action') == 'over':
+                self.start = False
 
     async def send(self, data):
         if data is None:

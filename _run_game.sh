@@ -12,8 +12,9 @@ show_help() {
     --map MAP\t\t\tselect map to run game. Default is $MAP
     --ip IP\t\t\tIP of server. Default is $IP
     --port PORT\t\t\tPORT of server. Default is $PORT
-    --speed SPEED\ttick speed of game. default is $SPEED
+    --speed SPEED\t\ttick speed of game. default is $SPEED
     --hidden-window\t\tdon't show window with game, run only server
+    --turn-off-after-end\tturn off server when game is end. Good option for machine learning
     "
 }
 
@@ -27,6 +28,7 @@ while :; do
         --map) MAP=$2; shift;;
         --speed) SPEED=$2; shift;;
         --hidden-window) SERVER_OPTS="$SERVER_OPTS --hidden-window";;
+        --turn-off-after-end) SERVER_OPTS="$SERVER_OPTS --turn-off-after-end";;
         *) break
     esac
     shift

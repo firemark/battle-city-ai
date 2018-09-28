@@ -14,6 +14,7 @@ parser.add_argument(
     '--map', type=str, help='path to map', default='pilif')
 parser.add_argument('--hidden-window', action='store_true', default=False)
 parser.add_argument('--speed', type=float, default=1, help='tick speed in milliseconds')
+parser.add_argument('--turn-off-after-end', action='store_true', default=False, help='turn off server when game is end. Good option for machine learning')
 
 
 async def game_loop(game: Game, speed: float=0.033):
@@ -58,7 +59,7 @@ async def handle_action(data: dict, player, game):
 def run():
     args = parser.parse_args()
 
-    game = Game()
+    game = Game(turn_off_after_end=args.turn_off_after_end)
     game.load_map(args.map)
     if not args.hidden_window:
         game.set_drawer()
