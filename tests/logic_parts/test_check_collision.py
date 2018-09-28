@@ -1,3 +1,4 @@
+from battle_city.collections.sliced_array import SlicedArray
 from battle_city.game import Game
 from battle_city.monsters import Player, NPC, Bullet, Coin
 from battle_city.logic_parts.check_collision import CheckCollisionsLogicPart
@@ -165,7 +166,7 @@ async def test_check_bullet_tinywall_collision():
     player = Player(0, 0, 0)
     game.bullets = [Bullet(0, 0)]
     game.bullets[0].set_parent(player)
-    game.walls = [TinyWall(0, 0)]
+    game.walls = SlicedArray([TinyWall(0, 0)])
 
     logic = CheckCollisionsLogicPart(game)
     await logic.check_bullets_with_walls()
@@ -181,7 +182,8 @@ async def test_check_bullet_metal_collision():
     player = Player(0, 0, 0)
     game.bullets = [Bullet(0, 0)]
     game.bullets[0].set_parent(player)
-    game.walls = [Metal(0, 0)]
+    game.walls = SlicedArray([Metal(0, 0)])
+
 
     logic = CheckCollisionsLogicPart(game)
     await logic.check_bullets_with_walls()
@@ -197,7 +199,7 @@ async def test_check_bullet_water_collision():
     player = Player(0, 0, 0)
     game.bullets = [Bullet(0, 0)]
     game.bullets[0].set_parent(player)
-    game.walls = [Water(0, 0)]
+    game.walls = SlicedArray([Water(0, 0)])
 
     logic = CheckCollisionsLogicPart(game)
     await logic.check_bullets_with_walls()
@@ -213,7 +215,7 @@ async def test_check_player_wall_collision(wall_cls):
     game = Game()
     player = Player(0, 0, 32)
     game.alive_players = [player]
-    game.walls = [wall_cls(64, 32)]
+    game.walls = SlicedArray([wall_cls(64, 32)])
 
     player.set_position(48, 32)
 
@@ -229,7 +231,7 @@ async def test_check_player_coin_collision():
     game = Game()
     player = Player(0, 0, 32)
     game.alive_players = [player]
-    game.coins = [Coin(48, 32)]
+    game.coins = SlicedArray([Coin(48, 32)])
 
     player.set_position(48, 32)
 

@@ -2,7 +2,8 @@ from battle_city.basic import Direction
 
 from uuid import UUID, uuid4
 from pygame import Rect
-from typing import List
+
+from battle_city.collections.sliced_array import SlicedArray
 
 
 class Monster(object):
@@ -44,9 +45,12 @@ class Monster(object):
     def get_type(self):
         return self.__class__.__name__.lower()
 
-    def check_collision_with_group(self, group: List, rect=None):
-        rect_group = [monster.position for monster in group]
+    def check_collision_with_group(self, group, rect=None):
         rect = rect or self.position
+        if isinstance(group, SlicedArray):
+            group = group.find_nearest(rect)
+
+        rect_group = [monster.position for monster in group]
         indices = rect.collidelistall(rect_group)
         return [group[index] for index in indices]
 

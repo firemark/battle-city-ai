@@ -19,3 +19,7 @@ class Coin:
             x=self.position.x,
             y=self.position.y,
         )
+
+    def __repr__(self):
+        pos = self.position
+        return 'Coin<{}, {}>'.format(pos.x, pos.y)

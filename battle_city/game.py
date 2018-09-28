@@ -1,3 +1,4 @@
+from battle_city.collections.sliced_array import SlicedArray
 from battle_city.monsters import Player, NPC, Bullet, Wall, Spawner
 from battle_city.logic import GameLogic
 from battle_city.drawer import Drawer
@@ -33,12 +34,12 @@ class Game(object):
     def __init__(self):
         self.npcs = []
         self.bullets = []
-        self.walls = []
+        self.walls = SlicedArray()
         self.player_spawns = {}
         self.npc_spawns = []
         self.players = []
         self.alive_players = []
-        self.coins = []
+        self.coins = SlicedArray()
         self.connections = []
         self.npcs_left = 20
         self.time_left = 300
