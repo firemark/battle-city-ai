@@ -56,11 +56,14 @@ class Game(object):
         elif data.get('status') == 'data':
             id = data['id']
             if data['action'] in {'move', 'change', 'freeze'}:
-                rect = self.map[id]['rect']
+                obj = self.map.get(id)
+                if not obj:
+                    return
+                rect = obj['rect']
                 rect.x = data['position']['x']
                 rect.y = data['position']['y']
             elif data['action'] == 'destroy':
-                del self.map[id]
+                self.map.pop(id, None)
             elif data['action'] == 'spawn':
                 self._add_to_map(data)
 

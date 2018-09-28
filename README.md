@@ -78,7 +78,7 @@ python setup.py develop
 
 ## How to write first bot?
 
-First, copy [example code](battle_city/client.py) to main dir with game.
+First, copy [example code](battle_city/examples/random.py) to main dir with game.
 (more examples are [here](battle_city/examples/))
 
 remember about virtualenv or pipenv!
@@ -86,15 +86,25 @@ remember about virtualenv or pipenv!
 https://docs.python.org/3/tutorial/venv.html
 https://pipenv.readthedocs.io/en/latest/
 
+#### For linux/mingw/osx/wsl
 ```sh
-# linux/mingw/osx/wsl
 ./run_game.sh --cmd-p1 "python copied_client.py"
-# The color of your tank will be yellow.
-# tmux version - more hackerable (with split screens in terminal)!
+```
+
+ The color of your tank will be yellow.
+
+#### tmux version - more hackerable (with split screens in terminal)!
+```
 ./run_game_tmux.sh --cmd-p1 "python copied_client.py"
 ```
 
 command would be a runner, example `"python copied_client.py"` - **remember** about quotes and command (python, nodejs, ruby or something else) to run your script!!
+
+Another examples:
+
+* *[random](battle_city/examples/random.py)* - show logs and make random actions
+* *[boilerplate](battle_city/examples/boilerplate.py)* - empty client
+* *[window](battle_city/examples/window.py)* - client shows window and draw game from recevied data
 
 ```
 run_game.sh [OPTIONS...]
@@ -112,7 +122,7 @@ The `run_game.sh` script will run the whole game with two clients. There is no n
 The script includes a command for running server and commands for running two clients. The basic clients are dummy.
 They will just move randomly.
 If you want to start implementing your algorithms for moves, create your own
-client, based on the example [example code](battle_city/client.py), and after finishing, 
+client, based on the example [example code](battle_city/examples/random.py), and after finishing,
 use it in `run_game.sh` script (examples are above).
 
 ## Server script

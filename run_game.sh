@@ -6,8 +6,8 @@ finish() {
     kill -9 $P1 $P2 $P3
 }
 
-CMD_A='python -m battle_city.client'
-CMD_B='python -m battle_city.client silent'
+CMD_A='python -m battle_city.examples.random'
+CMD_B='python -m battle_city.examples.random silent'
 source _run_game.sh
 echo "^C to cancel..."
 

@@ -42,7 +42,7 @@ Setup bullet in your tank and will shoot in next *TURN*.
 ## Monsters
 
 ### Bullets
-TODO
+Kill monsters / freeze players / destroy walls and relationships
 
 ### NPC
 OMG KILL IT!
@@ -50,11 +50,19 @@ OMG KILL IT!
 You will get 200 points for each killed NPC.
 
 ### Tanks
-
 Tanks controlled by bots.
 
 ## Walls
-TODO
+
+### Tinywall
+small brick (small part of red bricks) - bullet can destroy this.
+
+### Metal
+grey bricks - is not destroyable by bullets.
+
+### Water
+
+blue field, only bullets can across this field.
 
 ## Coins
 
