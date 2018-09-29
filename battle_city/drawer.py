@@ -16,23 +16,6 @@ DIR = path.abspath(path.dirname(__file__))
 IMAGES_DIR = path.join(DIR, '..', 'images')
 
 
-def _load_pack(name):
-    pathfile = path.join(IMAGES_DIR, '%s.png' % name)
-    image = img_load(pathfile)
-
-    return {
-        Direction.UP: image,
-        Direction.LEFT: rotate(image, 90),
-        Direction.DOWN: rotate(image, 180),
-        Direction.RIGHT: rotate(image, 270),
-    }
-
-
-def _load_simple(name):
-    pathfile = path.join(IMAGES_DIR, '%s.png' % name)
-    return img_load(pathfile)
-
-
 class Drawer(object):
     game = None  # type: game.Game
     time = 0 # type: int
@@ -50,23 +33,6 @@ class Drawer(object):
         (0, 255, 0),
     ]
 
-    IMAGES = dict(
-        IMG_PLAYER_1_1=_load_pack('player_11'),
-        IMG_PLAYER_2_1=_load_pack('player_21'),
-        IMG_NPC_1=_load_pack('npc_1'),
-        IMG_NPC_2=_load_pack('npc_2'),
-        IMG_PLAYER_1_2=_load_pack('player_12'),
-        IMG_PLAYER_2_2=_load_pack('player_22'),
-        BULLET=_load_pack('bullet'),
-        FREEZE=_load_simple('freeze'),
-        COIN=_load_simple('coin'),
-    )
-
-    WALLS = {
-        TinyWall: _load_simple('wall'),
-        Metal: _load_simple('metal'),
-        Water: _load_simple('water'),
-    }
 
     def __init__(self, game):
         pygame.init()
@@ -78,8 +44,44 @@ class Drawer(object):
         self.font = pygame.font.SysFont('monospace', self.FONT_SIZE, bold=True)
         self.game = game
 
+    def load_textures(self):
+        self.IMAGES = dict(
+            IMG_PLAYER_1_1=self._load_pack('player_11'),
+            IMG_PLAYER_2_1=self._load_pack('player_21'),
+            IMG_NPC_1=self._load_pack('npc_1'),
+            IMG_NPC_2=self._load_pack('npc_2'),
+            IMG_PLAYER_1_2=self._load_pack('player_12'),
+            IMG_PLAYER_2_2=self._load_pack('player_22'),
+            BULLET=self._load_pack('bullet'),
+            FREEZE=self._load_simple('freeze'),
+            COIN=self._load_simple('coin'),
+        )
+
+        self.WALLS = {
+            TinyWall: self._load_simple('wall'),
+            Metal: self._load_simple('metal'),
+            Water: self._load_simple('water'),
+        }
+
+    @staticmethod
+    def _load_pack(name):
+        pathfile = path.join(IMAGES_DIR, '%s.png' % name)
+        image = img_load(pathfile)
+
+        return {
+            Direction.UP: image,
+            Direction.LEFT: rotate(image, 90),
+            Direction.DOWN: rotate(image, 180),
+            Direction.RIGHT: rotate(image, 270),
+        }
+
+    @staticmethod
+    def _load_simple(name):
+        pathfile = path.join(IMAGES_DIR, '%s.png' % name)
+        return img_load(pathfile)
+
     def render(self):
-        self._support_pygame_events()
+        self._support_events()
 
         self.time = self.time + 1
         if self.time >= 100:
@@ -90,9 +92,12 @@ class Drawer(object):
         self._render_bullets()
         self._render_npcs()
         self._render_text()
+        self._post_render()
+
+    def _post_render(self):
         pygame.display.flip()
 
-    def _support_pygame_events(self):
+    def _support_events(self):
         events = pygame.event.get()
 
         for event in events:
