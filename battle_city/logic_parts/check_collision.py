@@ -48,7 +48,13 @@ class CheckCollisionsLogicPart(LogicPart):
     def _move_monster_with_monster(self, monster_a, monster_b, axis):
         pos_a = monster_a.position[axis]
         pos_b = monster_b.position[axis]
+        old_pos_a = monster_a.old_position[axis]
+        old_pos_b = monster_b.old_position[axis]
         diff = pos_a - pos_b
+
+        if old_pos_a - pos_a == 0 and old_pos_b - pos_b == 0:
+            return
+
 
         if diff > 0:
             diff -= monster_b.position[axis + 2]
