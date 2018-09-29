@@ -106,26 +106,37 @@ class CheckCollisionsLogicPart(LogicPart):
             await self.remove_from_group(bullet_b, bullets)
 
     async def check_bullets_with_walls(self):
+        bullets = self.game.bullets
+
+        for bullet in bullets:
+            await self.check_bullet_with_walls(bullet)
+
+    async def check_bullet_with_walls(self, bullet):
         game = self.game
         bullets = game.bullets
         walls = game.walls
 
-        for bullet in bullets:
+        for offset in [4, 0]:
+            is_touched_once = False
             with_collision_walls = bullet.check_collision_with_group(
                 group=walls,
-                rect=bullet.get_long_collision_rect(),
+                rect=bullet.get_long_collision_rect(offset=offset),
             )
 
             for wall in with_collision_walls:
                 is_destroyed, is_touched = wall.hurt()
 
                 if is_touched:
-                    await self.remove_from_group(bullet, bullets)
+                    is_touched_once = True
                 if is_destroyed:
                     await self.remove_from_group(wall, walls)
                     self.is_must_refresh_background = True
                     if isinstance(bullet.parent, Player):
                         bullet.parent.score += 1
+
+            if is_touched_once:
+                await self.remove_from_group(bullet, bullets)
+                return
 
     async def freeze(self, player: Player):
         player.set_freeze()
