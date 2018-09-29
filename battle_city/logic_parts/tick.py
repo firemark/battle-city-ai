@@ -5,7 +5,7 @@ from battle_city import messages
 class TickLogicPart(LogicPart):
 
     async def do_it(self):
-        if self.game.ticks >= 300:
+        if self.game.ticks >= 299:
             await self.unfreeze_players()
 
         if self.game.ticks % 10 == 0:
