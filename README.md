@@ -74,6 +74,7 @@ code works in Python 3.5, 3.6 and 3.7
 
 * https://docs.python.org/3/tutorial/venv.html
 * https://pipenv.readthedocs.io/en/latest/
+
 ```sh
 python setup.py develop
 ```
@@ -99,6 +100,20 @@ remember about virtualenv or pipenv!
 ```
 
  The color of your tank will be yellow.
+
+
+#### maybe windows?
+Omg why?
+
+You have four options:
+
+1, Install http://www.mingw.org/ and run bash shell
+2. WSL https://docs.microsoft.com/en-us/windows/wsl/install-win10
+3. Virtualbox https://www.osboxes.org/ubuntu/
+4. Run three scripts in seperate consoles:
+    * `python -m battle_city.server`
+    * `python client_a.py`
+    * `python -m battle_city.examples.random`
 
 #### tmux version - more hackerable (with split screens in terminal)!
 ```
@@ -154,6 +169,7 @@ pytest tests/
 
 * Python >=3.5
 * Pygame
+* Pyglet
 * Asyncio
 * JSON
 * Love
@@ -161,5 +177,7 @@ pytest tests/
 ## Contributors
 
 * Firemark - game logic and everything else
+* Socek - idea
 * Stachu - documentation improvment, beta testing
 * Noemi - beta testing
+* Prs - nice tips
