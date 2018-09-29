@@ -17,11 +17,13 @@ class Monster(object):
 
     SIZE = 8 
 
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, direction: Direction=None):
         self.id = uuid4()
         size = self.SIZE
         self.position = Rect(x, y, size, size)
         self.set_old_position()
+        if direction:
+            self.direction = direction
 
     def set_old_position(self):
         self.old_position = self.position.copy()
