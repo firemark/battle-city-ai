@@ -168,23 +168,23 @@ class Drawer(object):
         npcs_left = self.game.npcs_left
         npcs_in_area = len(self.game.npcs)
         time_left = self.game.time_left
-        self._render_label('BATTLE CITY AI', (0, 0))
-        self._render_label('NPCs left:    {:03d}'.format(npcs_left), (0, 40))
-        self._render_label('NPCs in area: {:03d}'.format(npcs_in_area), (0, 80))
-        self._render_label('Time left:    {:03d}'.format(time_left), (0, 120))
+        self._render_label('title', 'BATTLE CITY AI', (0, 0))
+        self._render_label('npc_left', 'NPCs left:    {:03d}'.format(npcs_left), (0, 40))
+        self._render_label('npc', 'NPCs in area: {:03d}'.format(npcs_in_area), (0, 80))
+        self._render_label('time', 'Time left:    {:03d}'.format(time_left), (0, 120))
 
         if not self.game.is_ready():
-            self._render_label('NOT READY', (0, 180))
+            self._render_label('not-ready', 'NOT READY', (0, 180))
         elif self.game.is_over():
-            self._render_label('GAME OVER', (0, 180), color=(255, 0, 0))
+            self._render_label('over', 'GAME OVER', (0, 180), color=(255, 0, 0))
 
         for num, player in enumerate(self.game.players, start=1):
             name_label = player.nick or 'P%s' % player.player_id
             info_label = self._get_info_label(player)
             label = '{:10} {:06d}'.format(name_label, player.score)
             color = self.PLAYER_COLORS[player.player_id]
-            self._render_label(label, (0, 200 + 40 * num), color)
-            self._render_label(info_label, (0, 220 + 40 * num), color)
+            self._render_label('p-%s' % num, label, (0, 200 + 40 * num), color)
+            self._render_label('p-info-%s' % num, info_label, (0, 220 + 40 * num), color)
 
     def _get_info_label(self, player):
         if player.is_game_over and self.time < 50:
@@ -196,7 +196,7 @@ class Drawer(object):
         else:
             return ''
 
-    def _render_label(self, label: str, cords, color=(0xff, 0xf1, 0xe8)):
+    def _render_label(self, id: str,  label: str, cords, color=(0xff, 0xf1, 0xe8)):
         image = self.font.render(label, 1, color)
         new_cords = (self.OFFSET_LABELS_X + cords[0], self.OFFSET_LABELS_Y + cords[1])
         self.screen.blit(image, new_cords)

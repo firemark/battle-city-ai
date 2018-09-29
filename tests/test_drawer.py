@@ -20,13 +20,19 @@ def test_render(pygame):
 
     assert mock_drawer.time == 1
     assert mock_drawer.method_calls == [
-        call._support_pygame_events(),
+        call._support_events(),
         call._render_background(),
         call._render_players(),
         call._render_bullets(),
         call._render_npcs(),
         call._render_text(),
+        call._post_render(),
     ]
+
+@patch_pygame
+def test_post_render(pygame):
+    drawer = Drawer(None)
+    drawer._post_render()
 
     assert pygame.display.flip.called
 
@@ -184,15 +190,15 @@ def test_render_text(pygame):
     drawer._render_text()
 
     assert drawer._render_label.call_args_list == [
-        call('BATTLE CITY AI', (0, 00)),
-        call('NPCs left:    003', (0, 40)),
-        call('NPCs in area: 002', (0, 80)),
-        call('Time left:    125', (0, 120)),
-        call('NOT READY', (0, 180)),
-        call('1234       000100', (0, 240), drawer.PLAYER_COLORS[0]),
-        call('WAIT', (0, 260), drawer.PLAYER_COLORS[0]),
-        call('P1         000000', (0, 280), drawer.PLAYER_COLORS[1]),
-        call('WAIT', (0, 300), drawer.PLAYER_COLORS[1]),
+        call('title', 'BATTLE CITY AI', (0, 00)),
+        call('npc_left', 'NPCs left:    003', (0, 40)),
+        call('npc', 'NPCs in area: 002', (0, 80)),
+        call('time', 'Time left:    125', (0, 120)),
+        call('not-ready', 'NOT READY', (0, 180)),
+        call('p-1', '1234       000100', (0, 240), drawer.PLAYER_COLORS[0]),
+        call('p-info-1', 'WAIT', (0, 260), drawer.PLAYER_COLORS[0]),
+        call('p-2', 'P1         000000', (0, 280), drawer.PLAYER_COLORS[1]),
+        call('p-info-2', 'WAIT', (0, 300), drawer.PLAYER_COLORS[1]),
     ]
 
 
@@ -237,7 +243,7 @@ def test_render_label(pygame):
     drawer = Drawer(Game())
     drawer.font.render = Mock(return_value='IMAGE')
 
-    drawer._render_label(label='test', cords=(1, 2), color=(0, 1, 2))
+    drawer._render_label(id='test', label='test', cords=(1, 2), color=(0, 1, 2))
 
     drawer.screen.blit.assert_called_once_with(
         'IMAGE',

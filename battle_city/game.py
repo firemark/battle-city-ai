@@ -1,7 +1,17 @@
 from battle_city.collections.sliced_array import SlicedArray
 from battle_city.monsters import Player, NPC, Bullet, Wall, Spawner
 from battle_city.logic import GameLogic
-from battle_city.drawer_pyglet import Drawer
+try:
+    from battle_city.drawer_pyglet import Drawer
+except:
+    import traceback
+    import sys
+    sys.stderr.write('Something is wrong with load OPENGL:\n')
+    sys.stderr.flush()
+    traceback.print_stack()
+    traceback.print_exc()
+    from battle_city.drawer import Drawer
+
 from battle_city.map_maker import MapMaker
 
 from battle_city import messages

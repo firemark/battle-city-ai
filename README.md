@@ -66,14 +66,21 @@ Is [here](docs/).
 
 ## How to install?
 
-```sh
-# code works in Python 3.5, 3.6 and 3.7
-# remember about virtualenv or pipenv!
-# https://docs.python.org/3/tutorial/venv.html
-# https://pipenv.readthedocs.io/en/latest/
+Clone This repo.
 
+code works in Python 3.5, 3.6 and 3.7
+
+*remember* about virtualenv or pipenv!
+
+* https://docs.python.org/3/tutorial/venv.html
+* https://pipenv.readthedocs.io/en/latest/
+```sh
 python setup.py develop
-# done.
+```
+
+To get OpenGL support (mega boost!) please install pyglet (not required)
+```sh
+pip install pyglet
 ```
 
 ## How to write first bot?
@@ -83,8 +90,8 @@ First, copy [example code](battle_city/examples/random.py) to main dir with game
 
 remember about virtualenv or pipenv!
 
-https://docs.python.org/3/tutorial/venv.html
-https://pipenv.readthedocs.io/en/latest/
+* https://docs.python.org/3/tutorial/venv.html
+* https://pipenv.readthedocs.io/en/latest/
 
 #### For linux/mingw/osx/wsl
 ```sh
