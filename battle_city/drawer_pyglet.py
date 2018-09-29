@@ -28,7 +28,11 @@ class Drawer(OldDrawer):
             height=self.SCREEN_HEIGHT,
             caption='BATTLE CITY AI',
         )
-        self.f = FPSDisplay(self.window)
+        # I dunno what this is doing
+        # BUT i need this to run pyglet without event loop
+        pyglet.app.event_loop._legacy_setup()
+
+        self.fps = FPSDisplay(self.window)
         self.background = pyglet.image.create(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
         self.time = 0
         self.game = game
@@ -56,15 +60,15 @@ class Drawer(OldDrawer):
 
     def _post_render(self):
         self._render_players()
-        self.f.draw()
+        self.fps.draw()
         self.window.flip()
 
     def _support_events(self):
+        return
         self.window.dispatch_event()
 
     def _render_background(self):
-        return
-        self.background.blit(-1, -1)
+        self.background.blit(0, 0)
 
     def bake_static_background(self):
         surface = pyglet.image.create(
@@ -73,9 +77,9 @@ class Drawer(OldDrawer):
             pattern=SolidColorImagePattern(color=(0x5f, 0x57, 0x4f, 0xff))
         )
 
-        #self._render_solid_colors(surface)
-        #self._render_walls(surface)
-        #self._render_coins(surface)
+        self._render_solid_colors(surface)
+        self._render_walls(surface)
+        self._render_coins(surface)
         self.background = surface
 
     def _render_solid_colors(self, surface):
@@ -106,10 +110,14 @@ class Drawer(OldDrawer):
             image.blit_to_texture(target, 0, position.x, position.y, 0)
 
     def _render_label(self, label: str, cords, color=(0xff, 0xf1, 0xe8)):
-        return
-        image = self.font.render(label, 1, color)
-        new_cords = (self.OFFSET_LABELS_X + cords[0], self.OFFSET_LABELS_Y + cords[1])
-        self.screen.blit(image, new_cords)
+        label = pyglet.text.Label(
+            label,
+          font_name='Monospace',
+          font_size=10,
+          x=self.OFFSET_LABELS_X + cords[0],
+          y=self.OFFSET_LABELS_Y + cords[1],
+        )
+        label.draw()
 
     def _blit(self, image_name, monster):
         image_pack = self.IMAGES[image_name]
@@ -120,5 +128,4 @@ class Drawer(OldDrawer):
             image = image_pack
 
         position = monster.position
-        s = Sprite(image, x=self.OFFSET + position.x, y=self.OFFSET + position.y)
-        s.draw()
+        image.blit(self.OFFSET + position.x, self.OFFSET + position.y)
