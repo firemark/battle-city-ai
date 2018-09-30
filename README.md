@@ -107,7 +107,7 @@ Omg why?
 
 You have four options:
 
-1, Install http://www.mingw.org/ and run bash shell
+1. Install http://www.mingw.org/ and run bash shell
 2. WSL https://docs.microsoft.com/en-us/windows/wsl/install-win10
 3. Virtualbox https://www.osboxes.org/ubuntu/
 4. Run three scripts in seperate consoles:
