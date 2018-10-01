@@ -52,8 +52,6 @@ class Game(object):
         get json from server and do something
         for example show on console data
         """
-        if is_silent:  # don't show anything
-            return
 
         if data.get('action') == 'move':
             return  # too many data ;_;
@@ -72,6 +70,9 @@ class Game(object):
             color = '\033[93m'  # orange color
         else:
             color = '\033[0m'  # default color
+
+        if is_silent:
+            return
 
         print(color, data, '\033[0m')
 

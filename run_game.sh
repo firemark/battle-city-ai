@@ -14,10 +14,10 @@ echo "^C to cancel..."
 python -m battle_city.server --ip $IP --port $PORT --map $MAP --speed $SPEED $SERVER_OPTS&
 P1=$!
 sleep 2
-$CMD_A | sed -s 's/^/CLIENT 1: /'&
+eval "$CMD_A" | sed 's/^/CLIENT 1: /'&
 P2=$!
 sleep 0.25
-$CMD_B | sed -s 's/^/CLIENT 2: /'&
+eval "$CMD_B" | sed 's/^/CLIENT 2: /'&
 P3=$!
 
 echo pids: $P1 $P2 $P3
