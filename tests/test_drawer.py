@@ -90,8 +90,8 @@ def test_render_players(pygame):
     drawer._render_players()
 
     assert drawer._blit.call_args_list == [
-        call('IMG_PLAYER_1_1', game.alive_players[0]),
-        call('IMG_PLAYER_2_1', game.alive_players[1]),
+        call('PLAYER_1_1', game.alive_players[0]),
+        call('PLAYER_2_1', game.alive_players[1]),
     ]
 
 
@@ -108,7 +108,7 @@ def test_render_players_with_freeze(pygame):
     drawer._render_players()
 
     assert drawer._blit.call_args_list == [
-        call('IMG_PLAYER_1_1', game.alive_players[0]),
+        call('PLAYER_1_1', game.alive_players[0]),
         call('FREEZE', game.alive_players[0]),
     ]
 
@@ -126,8 +126,8 @@ def test_render_npcs(pygame):
     drawer._render_npcs()
 
     assert drawer._blit.call_args_list == [
-        call('IMG_NPC_1', game.npcs[0]),
-        call('IMG_NPC_1', game.npcs[1]),
+        call('NPC_1', game.npcs[0]),
+        call('NPC_1', game.npcs[1]),
     ]
 
 
