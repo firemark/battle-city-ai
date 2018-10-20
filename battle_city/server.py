@@ -12,6 +12,7 @@ parser.add_argument(
     '--port', type=int, help='port of server to listen', default=8888)
 parser.add_argument(
     '--map', type=str, help='path to map', default='pilif')
+parser.add_argument('--max-players', type=int, default=2)
 parser.add_argument('--hidden-window', action='store_true', default=False)
 parser.add_argument('--speed', type=float, default=1, help='tick speed in milliseconds')
 parser.add_argument('--turn-off-after-end', action='store_true', default=False, help='turn off server when game is end. Good option for machine learning')
@@ -59,7 +60,10 @@ async def handle_action(data: dict, player, game):
 def run():
     args = parser.parse_args()
 
-    game = Game(turn_off_after_end=args.turn_off_after_end)
+    game = Game(
+        turn_off_after_end=args.turn_off_after_end,
+        max_players=args.max_players,
+    )
     game.load_map(args.map)
     if not args.hidden_window:
         game.set_drawer()

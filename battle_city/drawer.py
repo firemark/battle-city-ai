@@ -1,3 +1,5 @@
+from itertools import product
+
 from battle_city.basic import Direction
 from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
@@ -31,8 +33,9 @@ class Drawer(object):
     PLAYER_COLORS = [
         (255, 255, 0),
         (0, 255, 0),
+        (255, 0, 0),
+        (0, 128, 255),
     ]
-
 
     def __init__(self, game):
         pygame.init()
@@ -46,16 +49,17 @@ class Drawer(object):
 
     def load_textures(self):
         self.IMAGES = dict(
-            IMG_PLAYER_1_1=self._load_pack('player_11'),
-            IMG_PLAYER_2_1=self._load_pack('player_21'),
-            IMG_NPC_1=self._load_pack('npc_1'),
-            IMG_NPC_2=self._load_pack('npc_2'),
-            IMG_PLAYER_1_2=self._load_pack('player_12'),
-            IMG_PLAYER_2_2=self._load_pack('player_22'),
+            NPC_1=self._load_pack('npc_1'),
+            NPC_2=self._load_pack('npc_2'),
             BULLET=self._load_pack('bullet'),
             FREEZE=self._load_simple('freeze'),
             COIN=self._load_simple('coin'),
         )
+
+        for player_num, frame in product([1, 2, 3, 4], [1, 2]):
+            key = 'PLAYER_{}_{}'.format(player_num, frame)
+            path_key = 'player_{}{}'.format(player_num, frame)
+            self.IMAGES[key] = self._load_pack(path_key)
 
         self.WALLS = {
             TinyWall: self._load_simple('wall'),
@@ -124,10 +128,8 @@ class Drawer(object):
     def _render_players(self):
         players = self.game.alive_players
         for player in players:
-            if player.player_id == 0:
-                image_pack = self._get_frame(player, 'IMG_PLAYER_1')
-            else:
-                image_pack = self._get_frame(player, 'IMG_PLAYER_2')
+            player_pack = 'PLAYER_{}'.format(player.player_id + 1)
+            image_pack = self._get_frame(player, player_pack)
 
             self._blit(image_pack, player)
             if player.is_freeze and self.time % 30 < 15:
@@ -136,7 +138,7 @@ class Drawer(object):
     def _render_npcs(self):
         npcs = self.game.npcs
         for npc in npcs:
-            image = self._get_frame(npc, 'IMG_NPC')
+            image = self._get_frame(npc, 'NPC')
             self._blit(image, npc)
 
     def _get_frame(self, obj, img: str):

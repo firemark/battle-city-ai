@@ -35,6 +35,7 @@ class Game(object):
     step_lock = None  # type: Lock
     npcs_left = 0  # type: int
     ticks = 0  # type: int
+    max_players = 2
 
     was_ready = False
     was_over = False
@@ -45,7 +46,7 @@ class Game(object):
 
     MAX_NPC_IN_AREA = 5
 
-    def __init__(self, turn_off_after_end=False):
+    def __init__(self, turn_off_after_end=False, max_players=2):
         self.npcs = []
         self.bullets = []
         self.walls = SlicedArray()
@@ -59,6 +60,7 @@ class Game(object):
         self.time_left = 300
         self.ticks = 0
         self.turn_off_after_end = turn_off_after_end
+        self.max_players = max_players
 
         self.logic = GameLogic(self)
         self.drawer = None
@@ -70,7 +72,7 @@ class Game(object):
 
         self.players = [
             Player(player_id, *self.player_spawns[player_id])
-            for player_id in range(2)
+            for player_id in range(self.max_players)
         ]
         self.alive_players = self.players[:]  # copy list
 
