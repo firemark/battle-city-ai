@@ -87,7 +87,7 @@ pip install pyglet
 
 ## How to write first bot?
 
-First, copy [example code](battle_city/examples/random.py) to main dir with game.
+First, copy [example code](battle_city/examples/python/random.py) to main dir with game.
 (more examples are [here](battle_city/examples/))
 
 remember about virtualenv or pipenv!

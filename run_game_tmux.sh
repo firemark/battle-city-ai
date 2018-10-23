@@ -1,10 +1,10 @@
 #!/bin/bash
 set -e
 
-CMD_A='python -m battle_city.examples.random'
-CMD_B='python -m battle_city.examples.random'
-CMD_C='python -m battle_city.examples.random'
-CMD_D='python -m battle_city.examples.random'
+CMD_A='python -m battle_city.examples.python.random'
+CMD_B='python -m battle_city.examples.python.random'
+CMD_C='python -m battle_city.examples.python.random'
+CMD_D='python -m battle_city.examples.python.random'
 source _run_game.sh
 
 SESSION=${USER}_BATTLECITY
