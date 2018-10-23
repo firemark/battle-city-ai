@@ -76,22 +76,24 @@ client.setNoDelay();
 let game = new Game(client);
 
 client.connect({port: 8888, host: '127.0.0.1'}, function() {
-	console.log('\x1B[1mCONNECTED!\x1B[0m');
+    console.log('\x1B[1mCONNECTED!\x1B[0m');
     game.loop();
 });
 
 let buffer = '';
 client.on('data', function(raw) {
-    let message = raw.toString();
-    let hasEnd = message.substr(-1) == '\n';
-    if (hasEnd) {
-        let data = JSON.parse(message);
-        game.receive(data);
-        buffer = '';
-    } else {
-        buffer += message;
-    }
+    let prev, next;
+    let message = raw.toString('utf8');
+    while ((next = message.indexOf('\n', prev)) > -1) {
+      buffer += message.substring(prev, next);
 
+      let data = JSON.parse(buffer);
+      game.receive(data);
+
+      buffer = '';
+      prev = next + 1;
+    }
+    buffer += message.substring(prev);
 });
 
 client.on('close', function() {
