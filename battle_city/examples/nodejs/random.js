@@ -38,19 +38,16 @@ class Game {
         if (this.start) {
             let action = Math.floor(Math.random() * 3);
             switch(action) {
-                case 0:
-                    // random speed
+                case 0: // random speed
                     let speed = Math.round(Math.random() * 2);
                     this.send({action: 'set_speed', speed: speed});
                 break;
-                case 1:
-                    // random direction
+                case 1: // random direction
                     let index = Math.floor(Math.random() * 4);
                     let direction = ['up', 'down', 'left', 'right'][index];
                     this.send({action: 'rotate', direction: direction});
                 break;
-                case 2:
-                    // SHOT SHOT SHOT
+                case 2: // SHOT SHOT SHOT
                     this.send({action: 'shot'});
                 break;
             }
