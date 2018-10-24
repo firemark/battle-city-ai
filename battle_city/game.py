@@ -19,6 +19,7 @@ from battle_city import messages
 from typing import List, Dict
 from asyncio import wait, Lock
 from itertools import chain
+from random import shuffle
 
 
 class Game(object):
@@ -74,6 +75,7 @@ class Game(object):
             Player(player_id, *self.player_spawns[player_id])
             for player_id in range(self.max_players)
         ]
+        shuffle(self.players)
         self.alive_players = self.players[:]  # copy list
 
     def set_drawer(self):
