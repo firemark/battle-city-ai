@@ -27,6 +27,8 @@ while :; do
         -h|--help) show_help; exit;;
         --cmd-p1) CMD_A=$2; shift;;
         --cmd-p2) CMD_B=$2; shift;;
+        --cmd-p3) CMD_C=$2; shift;;
+        --cmd-p4) CMD_D=$2; shift;;
         --ip) IP=$2; shift;;
         --port) PORT=$2; shift;;
         --map) MAP=$2; shift;;
