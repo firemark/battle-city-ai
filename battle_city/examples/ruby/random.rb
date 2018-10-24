@@ -52,7 +52,7 @@ class Game
 
     def tick
         if !@first_tick
-            send 'action' => 'greet', 'name' => 'TEST'
+            send 'action' => 'greet', 'name' => 'RUBY'
             @first_tick = true
         end
 

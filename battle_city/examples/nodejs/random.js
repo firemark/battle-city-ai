@@ -31,7 +31,7 @@ class Game {
 
     loop() {
         if (!this.firstTick) {
-            this.send({action: 'greet', name: 'TEST'});
+            this.send({action: 'greet', name: 'NODEJS'});
             this.firstTick = true;
         } 
 

@@ -25,7 +25,7 @@ class Game(object):
         for example this tank make random choices (is a dummy tank!)
         """
         if not self.first_tick:
-            await self.send(action='greet', name='TEST')
+            await self.send(action='greet', name='PYTHON')
             self.first_tick = True
 
         if self.start:
