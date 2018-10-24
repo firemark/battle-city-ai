@@ -13,7 +13,7 @@ show_help() {
     --cmd-p3 CMD_P3\t\tcommand to run client as player3. Default is \"$CMD_C\"
     --cmd-p4 CMD_P4\t\tcommand to run client as player4. Default is \"$CMD_D\"
     --map MAP\t\t\tselect map to run game. Default is $MAP
-    --max-players NUM\t\t\tnumber of bots in game. Max is 4. Default is $MAX_PLAYERS
+    --max-players NUM\t\tnumber of bots in game. Max is 4. Default is $MAX_PLAYERS
     --ip IP\t\t\tIP of server. Default is $IP
     --port PORT\t\t\tPORT of server. Default is $PORT
     --speed SPEED\t\ttick speed of game. default is $SPEED
