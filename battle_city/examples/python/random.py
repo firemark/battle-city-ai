@@ -19,33 +19,31 @@ class Game(object):
         self.first_tick = False
         self.start = False
 
-        loop.call_soon(self._loop)
-
     async def loop_game(self):
         """
         sometimes execute any random action
         for example this tank make random choices (is a dummy tank!)
         """
         if not self.first_tick:
-            await self.send(dict(action='greet', name='TEST'))
+            await self.send(action='greet', name='TEST')
             self.first_tick = True
 
         if self.start:
             action = randint(0, 2)
 
-            if action == 0:
+            if action == 0:  # set speed
                 speed = randint(0, 2)
-                data = dict(action='set_speed', speed=speed)
-            elif action == 1:
+                await self.send(action='set_speed', speed=speed)
+            elif action == 1:  # set direction
                 direction = choice(['up', 'down', 'left', 'right'])
-                data = dict(action='rotate', direction=direction)
-            else:
-                data = dict(action='shoot')
+                await self.send(action='rotate', direction=direction)
+            else:  # SHOT SHOT
+                await self.send(action='shoot')
 
-            await self.send(data)
+        self.call_soon(0.25)
 
-        seconds_to_wait = 0.25
-        loop.call_later(seconds_to_wait, self._loop)
+    def call_soon(self, time):
+        loop.call_later(time, self._loop)
 
     async def receive(self, data):
         """
@@ -76,7 +74,7 @@ class Game(object):
 
         print(color, data, '\033[0m')
 
-    async def send(self, data):
+    async def send(self, **data):
         if data is None:
             return
         raw_data = json.dumps(data)
@@ -94,6 +92,7 @@ async def handle_client(loop):
     print('\033[1mCONNECTED!\033[0m')
 
     game = Game(loop, reader, writer)
+    loop.call_soon(game._loop)
 
     while True:
         raw_data = await reader.readline()
