@@ -6,27 +6,20 @@ class Game {
     }
 
     receive(data) {
-        let color = '\x1B[0m'; // default color
-        switch(data.status) {
+        switch (data.status) {
             case 'data':
-                switch(data.action) {
-                    case 'move': return; break; // too many data ;_;
-                    case 'spawn': color = '\x1B[92m'; break; // green color
-                    case 'destroy': color = '\x1B[93m'; break; // orange color
-                }
+                if (data.action === 'move') { return; } // to many data ;_;
+                // do sth
             break;
-            case 'ERROR': color = '\x1B[91m'; break; // red color
-            case 'OK': color = '\x1B[35m'; break; // purple color
             case 'game':
-                color = '\x1B[34m'; // blue color
-                switch(data.action) {
+                switch (data.action) {
                     case 'start': this.start = true; break;
                     case 'over': this.start = false; break;
                 }
             break; 
         }
 
-        console.log(color, data, '\x1B[0m');
+        console.log(this._getColor(data), data, '\x1B[0m');
     }
 
     loop() {
@@ -37,7 +30,7 @@ class Game {
 
         if (this.start) {
             let action = Math.floor(Math.random() * 3);
-            switch(action) {
+            switch (action) {
                 case 0: // random speed
                     let speed = Math.round(Math.random() * 2);
                     this.send({action: 'set_speed', speed: speed});
@@ -54,6 +47,22 @@ class Game {
         }
 
         this.callSoon(250);
+    }
+
+    _getColor(data) {
+        switch (data.status) {
+            case 'data':
+                switch (data.action) {
+                    case 'spawn': return '\x1B[92m'; break; // green color
+                    case 'destroy': return '\x1B[93m'; break; // orange color
+                    default: return '\x1B[0m'; // white color
+                }
+            break;
+            case 'ERROR': return '\x1B[91m'; break; // red color
+            case 'OK': return '\x1B[35m'; break; // purple color
+            case 'game': return '\x1B[34m'; break; // blue color
+            default: return '\x1B[0m'; // white color
+        }
     }
 
     callSoon(time) {

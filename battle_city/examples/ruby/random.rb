@@ -22,31 +22,17 @@ class Game
             @timestamp = new_timestamp
         end
 
-        color = "\e[0m"  # default color
         case data['status'] 
         when 'data'
-            case data['action']
-            when 'move'
-                return
-            when 'spawn'
-                color = "\e[92m"  # green color
-            when 'destroy'
-                color = "\e[93m"  # orange color
-            end
-        when 'ERROR'
-            color = "\e[91m"  # red color
-        when 'OK'
-            color = "\e[35m"  # purple color
+            if data['action'] == 'move' then return end  # too many data ;_;
         when 'game'
-            color = "\e[34m"  # blue color
             case data['action']
-            when 'start'
-                @start = true
-            when 'over'
-                @start = false
+            when 'start' then @start = true
+            when 'over' then @start = false
             end
         end
-        print color, data
+
+        print _get_color(data), data
         puts "\e[0m"
     end
 
@@ -69,6 +55,21 @@ class Game
             when 2  # SHOT SHOT
                 send 'action' => 'shoot'
             end
+        end
+    end
+
+    def _get_color(data)
+        case data['status'] 
+        when 'data'
+            case data['action']
+            when 'spawn' then "\e[92m"  # green color
+            when 'destroy' then "\e[93m"  # orange color
+            else "\e[0m"  # white color
+            end
+        when 'ERROR' then "\e[91m"  # red color
+        when 'OK' then "\e[35m"  # purple color
+        when 'game' then "\e[34m"  # blue color
+        else "\e[0m"  # white color
         end
     end
 

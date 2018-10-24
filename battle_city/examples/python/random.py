@@ -1,13 +1,7 @@
-from asyncio import get_event_loop, open_connection, ensure_future
 from random import randint, choice
 
 import json
-import sys
 
-try:
-    is_silent = sys.argv[1] == 'silent'
-except IndexError:
-    is_silent = False
 
 
 class Game(object):
@@ -51,28 +45,21 @@ class Game(object):
         for example show on console data
         """
 
-        if data.get('action') == 'move':
-            return  # too many data ;_;
-
-        if data.get('status') == 'ERROR':
-            color = '\033[91m'  # red color
-        elif data.get('status') == 'game':
-            color = '\033[34m'  # blue color
-            if data.get('action') == 'start':
+        status = data.get('status')
+        if status == 'data':
+            if data.get('action') == 'move':
+                return  # too many data ;_;
+        elif status == 'game':
+            action = data.get('action')
+            if action == 'start':
                 self.start = True
-            elif data.get('action') == 'over':
+            elif action == 'over':
                 self.start = False
-        elif data.get('action') == 'spawn':
-            color = '\033[92m'  # green color
-        elif data.get('action') == 'destroy':
-            color = '\033[93m'  # orange color
-        else:
-            color = '\033[0m'  # default color
 
         if is_silent:
             return
 
-        print(color, data, '\033[0m')
+        print(self._get_color(data), data, '\033[0m')
 
     async def send(self, **data):
         if data is None:
@@ -85,6 +72,33 @@ class Game(object):
 
     def _loop(self):
         return ensure_future(self.loop_game())
+
+    @staticmethod
+    def _get_color(data):
+        status = data.get('status')
+        if status == 'ERROR':
+            return '\033[91m'  # red color
+        if status == 'OK':
+            return '\033[35m'  # purple color
+        if status == 'game':
+            return '\033[34m'  # blue color
+        if status == 'game':
+            action = data.get('action')
+            if action == 'spawn':
+                return '\033[92m'  # green color
+            if action == 'destroy':
+                return '\033[93m'  # orange color
+        return '\033[0m'  # default color
+
+
+import sys
+
+from asyncio import get_event_loop, open_connection, ensure_future
+
+try:
+    is_silent = sys.argv[1] == 'silent'
+except IndexError:
+    is_silent = False
 
 
 async def handle_client(loop):
