@@ -94,6 +94,7 @@ First, copy example code to main dir with game. Example codes are for:
 * [python](battle_city/examples/python/radom.py)
 * [nodejs](battle_city/examples/nodejs/random.js)
 * [ruby](battle_city/examples/ruby/random.rb)
+* [java](battle_city/examples/java/Game.java)
 
 (more examples are [here](battle_city/examples/))
 
@@ -102,15 +103,34 @@ remember about virtualenv or pipenv!
 * https://docs.python.org/3/tutorial/venv.html
 * https://pipenv.readthedocs.io/en/latest/
 
-#### For linux/mingw/osx/wsl
+### For linux/mingw/osx/wsl
+
+#### Python
 ```sh
-./run_game.sh --cmd-p1 "python|nodejs|ruby copied_client.prefix"
+./run_game.sh --cmd-p1 "python copied_client.py"
+```
+
+#### NodeJs
+```sh
+./run_game.sh --cmd-p1 "nodejs copied_client.js"
+```
+
+#### Ruby
+```sh
+./run_game.sh --cmd-p1 "ruby copied_client.rb"
+```
+
+#### Java
+oh my god, what a terrible language! You need a json-simple package
+```sh
+javac -cp /usr/share/java/json-simple.jar Game.java -d .
+./run_game.sh --cmd-p1 "java -cp /usr/share/java/json-simple.jar:. Game"
 ```
 
  The color of your tank will be yellow.
 
 
-#### maybe windows?
+### maybe windows?
 Omg why?
 
 You have four options:
@@ -123,7 +143,7 @@ You have four options:
     * `python client_a.py`
     * `python -m battle_city.examples.random`
 
-#### tmux version - more hackerable (with split screens in terminal)!
+### tmux version - more hackerable (with split screens in terminal)!
 ```
 ./run_game_tmux.sh --cmd-p1 "python copied_client.py"
 ```
