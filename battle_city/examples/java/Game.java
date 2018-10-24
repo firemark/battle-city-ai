@@ -43,7 +43,9 @@ public class Game {
             break;
         }
 
-        System.out.println(data.toJSONString());
+        System.out.print(getColor(data));
+        System.out.print(data.toJSONString());
+        System.out.print("\033[0m\n");
     }
 
     public void tick() {
@@ -87,7 +89,22 @@ public class Game {
         }
     }
 
-    public void send(JSONObject obj) {
+    private String getColor(JSONObject data) {
+        switch ((String) data.get("status")) {
+            case "data":
+                switch ((String) data.get("action")) {
+                    case "spawn": return "\033[92m"; // green
+                    case "destroy": return "\033[93m"; // orange 
+                }
+            break;
+            case "ERROR": return "\033[91m"; // red
+            case "OK": return "\033[35m"; // purple
+            case "game": return "\033[34m"; // blue
+        }
+        return "\033[0m"; // white
+    }
+
+    private void send(JSONObject obj) {
         try {
             writer.write(obj.toJSONString().getBytes());
             writer.write('\n');
