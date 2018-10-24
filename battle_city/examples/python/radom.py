@@ -3,7 +3,6 @@ from random import randint, choice
 import json
 
 
-
 class Game(object):
 
     def __init__(self, loop, reader, writer):
