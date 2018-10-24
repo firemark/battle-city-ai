@@ -48,7 +48,7 @@ class Game {
                     this.send({action: 'rotate', direction: direction});
                 break;
                 case 2: // SHOT SHOT SHOT
-                    this.send({action: 'shot'});
+                    this.send({action: 'shoot'});
                 break;
             }
         }

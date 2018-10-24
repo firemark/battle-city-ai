@@ -67,9 +67,8 @@ class Game
                 direction = ['up', 'down', 'left', 'right'][index]
                 send 'action' => 'rotate', 'direction' => direction
             when 2  # SHOT SHOT
-                send 'action' => 'shot'
+                send 'action' => 'shoot'
             end
-            puts '!!'
         end
     end
 
