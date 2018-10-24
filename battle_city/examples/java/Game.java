@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Random;
 import java.net.Socket;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,9 +23,24 @@ public class Game {
         // java with not external libs doesnt have async code
         // so I must check timestamp and run tick
         long newTimestamp = System.currentTimeMillis();
-        if (timestamp - newTimestamp > 250) {
+        if (newTimestamp - timestamp > 250) {
             timestamp = newTimestamp;
             tick();
+        }
+
+        switch ((String) data.get("status")) {
+            case "data":
+                String action = (String) data.get("action");
+                if (action.equals("move")) {
+                    return; // to many data ;_;
+                }
+            break;
+            case "game":
+                switch ((String) data.get("action")) {
+                    case "start": start = true; break;
+                    case "over": start = false; break;
+                }
+            break;
         }
 
         System.out.println(data.toJSONString());
@@ -38,8 +54,36 @@ public class Game {
             send(obj);
             firstTick = true;
         }
+
         if (start) {
-            // do sth
+            Random generator = new Random();
+            int action = generator.nextInt(3);
+            JSONObject obj = new JSONObject();
+            switch (action) {
+                case 0: // random speed
+                    int speed = generator.nextInt(2);
+                    obj.put("action", "set_speed");
+                    obj.put("speed", speed);
+                    send(obj);
+                break;
+                case 1: // random direction
+                    int index = generator.nextInt(4);
+                    String direction = "";
+                    switch (index) {
+                        case 0: direction = "up"; break;
+                        case 1: direction = "down"; break;
+                        case 2: direction = "left"; break;
+                        case 3: direction = "right"; break;
+                    }
+                    obj.put("action", "rotate");
+                    obj.put("direction", direction);
+                    send(obj);
+                break;
+                case 2: // SHOT SHOT SHOT
+                    obj.put("action", "shoot");
+                    send(obj);
+                break;
+            }
         }
     }
 
