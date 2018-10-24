@@ -7,10 +7,10 @@ finish() {
     kill -9 ${PROGS[*]}
 }
 
-CMD_A='python -m battle_city.examples.python.random'
-CMD_B='python -m battle_city.examples.python.random silent'
-CMD_C='python -m battle_city.examples.python.random silent'
-CMD_D='python -m battle_city.examples.python.random silent'
+CMD_A='python -m battle_city.examples.python.radom'
+CMD_B='python -m battle_city.examples.python.radom silent'
+CMD_C='python -m battle_city.examples.python.radom silent'
+CMD_D='python -m battle_city.examples.python.radom silent'
 source _run_game.sh
 
 echo "^C to cancel..."
