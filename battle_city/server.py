@@ -16,6 +16,7 @@ parser.add_argument('--max-players', type=int, default=2)
 parser.add_argument('--hidden-window', action='store_true', default=False)
 parser.add_argument('--speed', type=float, default=1, help='tick speed in milliseconds')
 parser.add_argument('--turn-off-after-end', action='store_true', default=False, help='turn off server when game is end. Good option for machine learning')
+parser.add_argument('--show-collision-border', action='store_true', default=False, help='show borders with collisions')
 
 
 async def game_loop(game: Game, speed: float=0.033):
@@ -63,6 +64,7 @@ def run():
     game = Game(
         turn_off_after_end=args.turn_off_after_end,
         max_players=args.max_players,
+        show_borders=args.show_collision_border,
     )
     game.load_map(args.map)
     if not args.hidden_window:

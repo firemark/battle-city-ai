@@ -1,5 +1,8 @@
 from asyncio import get_event_loop
 
+from pygame.rect import Rect
+
+from battle_city.basic import Direction
 from battle_city.logic_parts.base import LogicPart
 from battle_city.monsters.monster import Monster
 from battle_city.monsters.player import Player
@@ -41,9 +44,9 @@ class CheckCollisionsLogicPart(LogicPart):
                 self._move_monster_with_monster(tank_a, tank_b, 0)
                 self._move_monster_with_monster(tank_a, tank_b, 1)
             elif old_col_a:
-                self.move_monster_with_static_obj(tank_a, tank_b)
+                self.move_monster_with_static_obj(tank_a, tank_b.position)
             elif old_col_b:
-                self.move_monster_with_static_obj(tank_b, tank_a)
+                self.move_monster_with_static_obj(tank_b, tank_a.position)
 
     def _move_monster_with_monster(self, monster_a, monster_b, axis):
         pos_a = monster_a.position[axis]
@@ -54,7 +57,6 @@ class CheckCollisionsLogicPart(LogicPart):
 
         if old_pos_a - pos_a == 0 and old_pos_b - pos_b == 0:
             return
-
 
         if diff > 0:
             diff -= monster_b.position[axis + 2]
@@ -104,7 +106,10 @@ class CheckCollisionsLogicPart(LogicPart):
             if not self.is_monster_in_area(bullet):
                 await self.remove_from_group(bullet, bullets)
 
-        for bullet_a, bullet_b in self.check_collision(bullets, bullets):
+        def callback(bullet):
+            return bullet.get_grid_position()
+
+        for bullet_a, bullet_b in self.check_collision(bullets, bullets, callback):
             if bullet_a is bullet_b:
                 continue
 
@@ -121,28 +126,58 @@ class CheckCollisionsLogicPart(LogicPart):
         game = self.game
         bullets = game.bullets
         walls = game.walls
+        is_touched_once = False
+        is_destroyed_once = False
 
-        for offset in [4, 0]:
-            is_touched_once = False
-            with_collision_walls = bullet.check_collision_with_group(
-                group=walls,
-                rect=bullet.get_long_collision_rect(offset=offset),
-            )
+        with_collision_walls = bullet.check_collision_with_group(
+            group=walls,
+            rect=bullet.get_grid_position()
+        )
+        for wall in with_collision_walls:
+            is_destroyed, is_touched = wall.hurt()
 
-            for wall in with_collision_walls:
-                is_destroyed, is_touched = wall.hurt()
+            if is_touched:
+                is_touched_once = True
+            if is_destroyed:
+                is_destroyed_once = True
 
-                if is_touched:
-                    is_touched_once = True
-                if is_destroyed:
-                    await self.remove_from_group(wall, walls)
-                    self.is_must_refresh_background = True
-                    if isinstance(bullet.parent, Player):
-                        bullet.parent.score += 1
+        if is_touched_once:
+            await self.remove_from_group(bullet, bullets)
 
-            if is_touched_once:
-                await self.remove_from_group(bullet, bullets)
-                return
+        if is_destroyed_once:
+            self.is_must_refresh_background = True
+            # I know, ugly :/
+            if bullet.direction is Direction.DOWN:
+                min_y = min(wall.position.y for wall in with_collision_walls)
+                walls_to_destroy = (
+                    wall for wall in with_collision_walls
+                    if wall.position.y == min_y
+                )
+            elif bullet.direction is Direction.UP:
+                max_y = max(wall.position.y for wall in with_collision_walls)
+                walls_to_destroy = (
+                    wall for wall in with_collision_walls
+                    if wall.position.y == max_y
+                )
+            elif bullet.direction is Direction.RIGHT:
+                min_x = min(wall.position.x for wall in with_collision_walls)
+                walls_to_destroy = (
+                    wall for wall in with_collision_walls
+                    if wall.position.x == min_x
+                )
+            elif bullet.direction is Direction.LEFT:
+                max_x = max(wall.position.x for wall in with_collision_walls)
+                walls_to_destroy = (
+                    wall for wall in with_collision_walls
+                    if wall.position.x == max_x
+                )
+            else:
+                walls_to_destroy = []
+
+            for wall in walls_to_destroy:
+                await self.remove_from_group(wall, walls)
+                if isinstance(bullet.parent, Player):
+                    bullet.parent.score += 1
 
     async def freeze(self, player: Player):
         player.set_freeze()
@@ -166,11 +201,14 @@ class CheckCollisionsLogicPart(LogicPart):
             # small probability to infinity loop - we need to cancel on 5th try
             for i in range(5):
                 # check_collision is very greedy - in future we need quadtree structure
-                collision_walls = monster.check_collision_with_group(walls)
+                collision_walls = monster.check_collision_with_group(
+                    group=walls,
+                    rect=monster.get_grid_position(),
+                )
                 if not collision_walls:
                     break
-                wall = collision_walls[0]
-                self.move_monster_with_static_obj(monster, wall)
+                rect = collision_walls[0].get_grid_position()
+                self.move_monster_with_static_obj(monster, rect)
 
         for monster in self.game.get_tanks_chain():
             if monster.position.left < 0:
@@ -193,9 +231,9 @@ class CheckCollisionsLogicPart(LogicPart):
             player.score += 100
 
     @classmethod
-    def move_monster_with_static_obj(cls, monster, other):
-        cls.move_monster_with_static_obj_axis(monster, other, axis=0)
-        cls.move_monster_with_static_obj_axis(monster, other, axis=1)
+    def move_monster_with_static_obj(cls, monster, rect: Rect):
+        cls.move_monster_with_static_obj_axis(monster, rect, axis=0)
+        cls.move_monster_with_static_obj_axis(monster, rect, axis=1)
 
     @staticmethod
     def get_border_diff(pos_a, pos_b, axis: int) -> int:
@@ -207,9 +245,8 @@ class CheckCollisionsLogicPart(LogicPart):
 
     @classmethod
     def move_monster_with_static_obj_axis(
-            cls, monster: Monster, other: Monster, axis: int):
+            cls, monster: Monster, other_pos: Rect, axis: int):
         monster_pos = monster.position
-        other_pos = other.position
 
         # we need to detect direction of move using diff
         diff = monster.position[axis] - monster.old_position[axis]
@@ -236,8 +273,10 @@ class CheckCollisionsLogicPart(LogicPart):
         await self.game.broadcast(data)
 
     @staticmethod
-    def check_collision(group_a, group_b):
+    def check_collision(group_a, group_b, callback=None):
+        callback = callback or (lambda m: m.position)
         for monster in group_a:
-            collisions = monster.check_collision_with_group(group_b)
+            rect = callback(monster)
+            collisions = monster.check_collision_with_group(group_b, rect, callback)
             for collision in collisions:
                 yield (monster, collision)

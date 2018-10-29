@@ -1,6 +1,8 @@
 from battle_city.monsters import Monster
 from battle_city.basic import Direction
 
+from pygame import Rect
+
 
 class Tank(Monster):
     HOR_DIRECTIONS = {Direction.LEFT, Direction.RIGHT}
@@ -27,3 +29,17 @@ class Tank(Monster):
 
         if direction in self.HOR_DIRECTIONS and old_direction not in self.HOR_DIRECTIONS:
             self.position.y = round(self.position.y / part_size) * part_size
+
+    def get_grid_position(self):
+        position = self.position
+
+        # (x >> 4) << 4 is faster than floor(x / 16) * 16
+        x = (position.x >> 4) << 4
+        y = (position.y >> 4) << 4
+
+        return Rect(
+            x,
+            y,
+            (((position.right + 15) >> 4) << 4) - x,
+            (((position.bottom + 15) >> 4) << 4) - y,
+        )

@@ -19,6 +19,7 @@ show_help() {
     --speed SPEED\t\ttick speed of game. default is $SPEED
     --hidden-window\t\tdon't show window with game, run only server
     --turn-off-after-end\tturn off server when game is end. Good option for machine learning
+    --show-collision-border\tshow borders with collisions
     "
 }
 
@@ -36,6 +37,7 @@ while :; do
         --max-players) MAX_PLAYERS=$2; shift;;
         --hidden-window) SERVER_OPTS="$SERVER_OPTS --hidden-window";;
         --turn-off-after-end) SERVER_OPTS="$SERVER_OPTS --turn-off-after-end";;
+        --show-collision-border) SERVER_OPTS="$SERVER_OPTS --show-collision-border";;
         *) break
     esac
     shift

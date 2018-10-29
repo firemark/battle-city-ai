@@ -30,9 +30,20 @@ class Wall(object):
         """
         return True, True
 
+    def get_grid_position(self):
+        return self.position
+
 
 class TinyWall(Wall):
     SIZE = 8
+
+    def get_grid_position(self):
+        return Rect(
+            (self.position.x >> 4) << 4,
+            (self.position.y >> 4) << 4,
+            16,
+            16,
+        )
 
 
 class Metal(Wall):

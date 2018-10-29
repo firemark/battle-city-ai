@@ -37,6 +37,7 @@ class Game(object):
     npcs_left = 0  # type: int
     ticks = 0  # type: int
     max_players = 2
+    show_borders = False
 
     was_ready = False
     was_over = False
@@ -47,7 +48,7 @@ class Game(object):
 
     MAX_NPC_IN_AREA = 5
 
-    def __init__(self, turn_off_after_end=False, max_players=2):
+    def __init__(self, turn_off_after_end=False, max_players=2, show_borders=False):
         self.npcs = []
         self.bullets = []
         self.walls = SlicedArray()
@@ -62,6 +63,7 @@ class Game(object):
         self.ticks = 0
         self.turn_off_after_end = turn_off_after_end
         self.max_players = max_players
+        self.show_borders = show_borders
 
         self.logic = GameLogic(self)
         self.drawer = None
@@ -79,7 +81,7 @@ class Game(object):
         self.alive_players = self.players[:]  # copy list
 
     def set_drawer(self):
-        self.drawer = Drawer(self)
+        self.drawer = Drawer(self, show_borders=self.show_borders)
         self.drawer.load_textures()
         self.drawer.bake_static_background()
 

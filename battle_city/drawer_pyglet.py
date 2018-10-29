@@ -20,7 +20,7 @@ class Drawer(OldDrawer):
     _labels_cache = None
     FONT_SIZE = 16
 
-    def __init__(self, game):
+    def __init__(self, game, show_borders=False):
         self.window = pyglet.window.Window(
             width=self.SCREEN_WIDTH,
             height=self.SCREEN_HEIGHT,
@@ -36,6 +36,7 @@ class Drawer(OldDrawer):
         self.background = pyglet.image.create(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
         self.time = 0
         self.game = game
+        self.show_borders = show_borders
 
     @staticmethod
     def _load_pack(name):
@@ -143,7 +144,7 @@ class Drawer(OldDrawer):
             self._labels_cache[id] = label_obj
         label_obj.draw()
 
-    def _blit(self, image_name, monster):
+    def _blit(self, image_name, monster, rect=None):
         image_pack = self.IMAGES[image_name]
 
         if isinstance(image_pack, dict):
@@ -151,9 +152,26 @@ class Drawer(OldDrawer):
         else:
             image = image_pack
 
-        position = monster.position
+        position = rect or monster.position
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         image.blit(
             self.OFFSET + position.x,
             self.SCREEN_HEIGHT - self.OFFSET - position.y - position.height,
+        )
+
+    def _draw_rectangle(self, rect, color=(0xFF, 0, 0)):
+        x = self.OFFSET + rect.x
+        y = self.SCREEN_HEIGHT - self.OFFSET - rect.y
+        w = x + rect.width
+        h = y - rect.height
+        pyglet.graphics.draw(
+            4,
+            pyglet.gl.GL_LINE_LOOP,
+            ('v2f', [
+                x, y,
+                w, y,
+                w, h,
+                x, h,
+            ]),
+            ('c3B', color * 4)
         )

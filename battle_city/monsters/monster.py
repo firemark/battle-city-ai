@@ -47,12 +47,23 @@ class Monster(object):
     def get_type(self):
         return self.__class__.__name__.lower()
 
-    def check_collision_with_group(self, group, rect=None):
+    def get_grid_position(self):
+        position = self.position
+        return Rect(
+            # (x >> 4) << 4 is faster than floor(x / 16) * 16
+            (position.x >> 4) << 4,
+            (position.y >> 4) << 4,
+            32,
+            32,
+        )
+
+    def check_collision_with_group(self, group, rect=None, callback=None):
+        callback = callback or (lambda m: m.position)
         rect = rect or self.position
         if isinstance(group, SlicedArray):
             group = group.find_nearest(rect)
 
-        rect_group = [monster.position for monster in group]
+        rect_group = list(map(callback, group))
         indices = rect.collidelistall(rect_group)
         return [group[index] for index in indices]
 

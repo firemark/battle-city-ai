@@ -1,5 +1,7 @@
 from itertools import product
 
+from pygame.rect import Rect
+
 from battle_city.basic import Direction
 from battle_city.monsters.wall import Wall, Metal, Water, TinyWall
 
@@ -21,6 +23,7 @@ IMAGES_DIR = path.join(DIR, '..', 'images')
 class Drawer(object):
     game = None  # type: game.Game
     time = 0 # type: int
+    show_borders = False
 
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 600
@@ -37,7 +40,7 @@ class Drawer(object):
         (0, 128, 255),
     ]
 
-    def __init__(self, game):
+    def __init__(self, game, show_borders=False):
         pygame.init()
         pygame.display.set_caption('BATTLE CITY AI')
         self.time = 0
@@ -46,6 +49,7 @@ class Drawer(object):
             (self.SCREEN_WIDTH, self.SCREEN_HEIGHT), 0, 32)
         self.font = pygame.font.SysFont('monospace', self.FONT_SIZE, bold=True)
         self.game = game
+        self.show_borders = show_borders
 
     def load_textures(self):
         self.IMAGES = dict(
@@ -131,6 +135,9 @@ class Drawer(object):
             player_pack = 'PLAYER_{}'.format(player.player_id + 1)
             image_pack = self._get_frame(player, player_pack)
 
+            if self.show_borders:
+                self._draw_rectangle(player.get_grid_position())
+                self._draw_rectangle(player.position, color=(0, 0xFF, 0))
             self._blit(image_pack, player)
             if player.is_freeze and self.time % 30 < 15:
                 self._blit('FREEZE', player)
@@ -139,6 +146,9 @@ class Drawer(object):
         npcs = self.game.npcs
         for npc in npcs:
             image = self._get_frame(npc, 'NPC')
+            if self.show_borders:
+                self._draw_rectangle(npc.get_grid_position())
+                self._draw_rectangle(npc.position, color=(0, 0xFF, 0))
             self._blit(image, npc)
 
     def _get_frame(self, obj, img: str):
@@ -148,6 +158,9 @@ class Drawer(object):
 
     def _render_bullets(self):
         for bullet in self.game.bullets:
+            if self.show_borders:
+                self._draw_rectangle(bullet.get_grid_position())
+                self._draw_rectangle(bullet.position, color=(0, 0xFF, 0))
             self._blit('BULLET', bullet)
 
     def _render_walls(self, surface):
@@ -203,7 +216,7 @@ class Drawer(object):
         new_cords = (self.OFFSET_LABELS_X + cords[0], self.OFFSET_LABELS_Y + cords[1])
         self.screen.blit(image, new_cords)
 
-    def _blit(self, image_name, monster):
+    def _blit(self, image_name, monster, rect=None):
         image_pack = self.IMAGES[image_name]
 
         if isinstance(image_pack, dict):
@@ -211,7 +224,15 @@ class Drawer(object):
         else:
             image = image_pack
 
-        position = monster.position
+        position = rect or monster.position
         cords = (self.OFFSET + position.x, self.OFFSET + position.y)
         self.screen.blit(image, cords)
 
+    def _draw_rectangle(self, rect, color=(0xFF, 0, 0)):
+        nrect = Rect(
+            self.OFFSET + rect.x,
+            self.OFFSET + rect.y,
+            rect.width,
+            rect.height,
+        )
+        pygame.draw.rect(self.screen, color, nrect)
