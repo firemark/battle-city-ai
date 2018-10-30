@@ -59,11 +59,12 @@ TODO
 Is [here](docs/).
 
 * [General rules of game](docs/rules.md)
+* [Types in game](docs/types.md)
+* [Collision](docs/collision.md)
 * [General Protocol](docs/protocol.md)
 * [Player actions](docs/actions.md)
 * [Unit's messages](docs/units.md)
 * [Game's messages](docs/game.md)
-* [Types in game](docs/types.md)
 
 ## How to install?
 
