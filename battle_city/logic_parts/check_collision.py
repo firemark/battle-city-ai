@@ -175,9 +175,11 @@ class CheckCollisionsLogicPart(LogicPart):
                 walls_to_destroy = []
 
             for wall in walls_to_destroy:
-                await self.remove_from_group(wall, walls)
-                if isinstance(bullet.parent, Player):
-                    bullet.parent.score += 1
+                is_destroyed, _ = wall.hurt()
+                if is_destroyed:
+                    await self.remove_from_group(wall, walls)
+                    if isinstance(bullet.parent, Player):
+                        bullet.parent.score += 1
 
     async def freeze(self, player: Player):
         player.set_freeze()
