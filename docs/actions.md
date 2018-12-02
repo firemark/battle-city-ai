@@ -29,7 +29,7 @@ Need to set name of player and get map. Name of player must be 6 char length and
 
 ### Response
 Types and coordinations are descripted in [types.md](types.md)
-Size of map are 256×256.
+Size of map is 512×512.
 
 ```js
 {
