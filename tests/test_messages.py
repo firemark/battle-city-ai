@@ -1,6 +1,6 @@
 from battle_city.basic import Direction
 from battle_city.game import Game
-from battle_city.monsters import Bullet, NPC, Player
+from battle_city.monsters import Bullet, NPC, Player, Coin
 from battle_city.monsters.wall import TinyWall, Water
 from battle_city import messages
 
@@ -13,6 +13,7 @@ def test_messages_get_world_data():
     game.npcs = [NPC(2, 2)]
     game.bullets = [Bullet(3, 3)]
     game.walls = [TinyWall(x=4, y=4), Water(x=5, y=5)]
+    game.coins = [Coin(x=4, y=4), Coin(x=5, y=5)]
 
     assert messages.get_world_data(player, game) == dict(
         id=player.id.hex,
@@ -22,6 +23,8 @@ def test_messages_get_world_data():
             dict(type='bullet', id=game.bullets[0].id.hex, position={'x': 3, 'y': 3}),
             dict(type='tinywall', id=game.walls[0].id.hex, position={'x': 4, 'y': 4}),
             dict(type='water', id=game.walls[1].id.hex, position={'x': 5, 'y': 5}),
+            dict(type='coin', id=game.coins[0].id.hex, position={'x': 4, 'y': 4}),
+            dict(type='coin', id=game.coins[1].id.hex, position={'x': 5, 'y': 5}),
         ]
     )
 

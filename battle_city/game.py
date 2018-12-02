@@ -118,6 +118,7 @@ class Game(object):
             self.npcs,
             self.bullets,
             self.walls,
+            self.coins,
         )
 
     def get_tanks_chain(self):
